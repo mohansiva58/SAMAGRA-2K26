@@ -167,6 +167,76 @@ export function HeroSection() {
         </div>
       </div>
 
+      {/* ── Hanging Posters ── */}
+      {/* Left poster — poster2 (CSD/CSIT Prompt Engineering poster), tilted left */}
+      <div
+        className="hidden lg:flex flex-col items-center absolute left-4 xl:left-10 top-20 z-10 pointer-events-none"
+        aria-hidden="true"
+        style={{ animation: 'swayLeft 6s ease-in-out infinite' }}
+      >
+        {/* Pin */}
+        <svg width="18" height="22" viewBox="0 0 18 22" fill="none" style={{ zIndex: 2 }}>
+          <circle cx="9" cy="6" r="5.5" fill="#00d4ff" stroke="#fff" strokeWidth="1.5" opacity="0.9" />
+          <circle cx="9" cy="6" r="2" fill="#fff" opacity="0.6" />
+          <rect x="8" y="10" width="2" height="12" rx="1" fill="#00d4ff" opacity="0.7" />
+        </svg>
+        {/* Thread */}
+        <div style={{ width: 1.5, height: 18, background: 'linear-gradient(180deg, #00d4ff80, transparent)' }} />
+        {/* Poster frame */}
+        <div
+          style={{
+            transform: 'rotate(-5deg)',
+            transformOrigin: 'top center',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.6), 0 0 30px rgba(0,212,255,0.15)',
+            borderRadius: 10,
+            border: '2px solid rgba(0,212,255,0.25)',
+            overflow: 'hidden',
+            width: 200,
+          }}
+        >
+          <img
+            src="/poster2.png"
+            alt="SAMAGRA 2026 – Prompt Engineering event poster"
+            style={{ display: 'block', width: '100%', height: 'auto' }}
+          />
+        </div>
+      </div>
+
+      {/* Right poster — poster1 (national level event poster), tilted right */}
+      <div
+        className="hidden lg:flex flex-col items-center absolute right-4 xl:right-10 top-20 z-10 pointer-events-none"
+        aria-hidden="true"
+        style={{ animation: 'swayRight 7s ease-in-out infinite' }}
+      >
+        {/* Pin */}
+        <svg width="18" height="22" viewBox="0 0 18 22" fill="none" style={{ zIndex: 2 }}>
+          <circle cx="9" cy="6" r="5.5" fill="#7c3aed" stroke="#fff" strokeWidth="1.5" opacity="0.9" />
+          <circle cx="9" cy="6" r="2" fill="#fff" opacity="0.6" />
+          <rect x="8" y="10" width="2" height="12" rx="1" fill="#7c3aed" opacity="0.7" />
+        </svg>
+        {/* Thread */}
+        <div style={{ width: 1.5, height: 18, background: 'linear-gradient(180deg, #7c3aed80, transparent)' }} />
+        {/* Poster frame */}
+        <div
+          style={{
+            transform: 'rotate(5deg)',
+            transformOrigin: 'top center',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.6), 0 0 30px rgba(124,58,237,0.15)',
+            borderRadius: 10,
+            border: '2px solid rgba(124,58,237,0.25)',
+            overflow: 'hidden',
+            width: 220,
+          }}
+        >
+          <img
+            src="/poster1.jpeg"
+            alt="SAMAGRA 2026 national level event poster"
+            style={{ display: 'block', width: '100%', height: 'auto' }}
+          />
+        </div>
+      </div>
+
+
       {/* Scroll indicator */}
       <div
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-60"
