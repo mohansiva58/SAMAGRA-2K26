@@ -181,7 +181,7 @@ export function HeroSection() {
           <rect x="8" y="10" width="2" height="12" rx="1" fill="#00d4ff" opacity="0.7" />
         </svg>
         {/* Thread */}
-        <div style={{ width: 1.5, height: 18, background: 'linear-gradient(180deg, #00d4ff80, transparent)' }} />
+        <div style={{ width: 1.5, height: 200, background: 'linear-gradient(180deg, #00d4ff80, transparent)' }} />
         {/* Poster frame */}
         <div
           style={{
@@ -215,7 +215,7 @@ export function HeroSection() {
           <rect x="8" y="10" width="2" height="12" rx="1" fill="#7c3aed" opacity="0.7" />
         </svg>
         {/* Thread */}
-        <div style={{ width: 1.5, height: 18, background: 'linear-gradient(180deg, #7c3aed80, transparent)' }} />
+        <div style={{ width: 1.5, height: 70, background: 'linear-gradient(180deg, #7c3aed80, transparent)' }} />
         {/* Poster frame */}
         <div
           style={{
