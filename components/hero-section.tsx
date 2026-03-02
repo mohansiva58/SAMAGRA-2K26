@@ -168,9 +168,11 @@ export function HeroSection() {
       </div>
 
       {/* ── Hanging Posters ── */}
-      {/* Left poster — poster2 (CSD/CSIT Prompt Engineering poster), tilted left */}
+      {/* Left poster — poster2 (CSD/CSIT Prompt Engineering poster) → scrolls to About */}
       <div
-        className="hidden lg:flex flex-col items-center absolute left-4 xl:left-10 top-20 z-10 pointer-events-none"
+        className="hidden lg:flex flex-col items-center absolute left-4 xl:left-10 top-20 z-10 cursor-pointer"
+        onClick={() => scrollTo('about')}
+        title="What is Prompt Engineering?"
         aria-hidden="true"
         style={{ animation: 'swayLeft 6s ease-in-out infinite' }}
       >
@@ -192,7 +194,10 @@ export function HeroSection() {
             border: '2px solid rgba(0,212,255,0.25)',
             overflow: 'hidden',
             width: 200,
+            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
           }}
+          onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'rotate(-5deg) scale(1.04)'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'rotate(-5deg)'; }}
         >
           <img
             src="/poster2.png"
@@ -202,10 +207,11 @@ export function HeroSection() {
         </div>
       </div>
 
-      {/* Right poster — poster1 (national level event poster), tilted right */}
+      {/* Right poster — poster1 (national level event poster) → scrolls to Registration */}
       <div
-        className="hidden lg:flex flex-col items-center absolute right-4 xl:right-10 top-20 z-10 pointer-events-none"
-        aria-hidden="true"
+        className="hidden lg:flex flex-col items-center absolute right-4 xl:right-10 top-20 z-10 cursor-pointer"
+        onClick={() => scrollTo('registration')}
+        title="Register Now"
         style={{ animation: 'swayRight 7s ease-in-out infinite' }}
       >
         {/* Pin */}
@@ -226,7 +232,10 @@ export function HeroSection() {
             border: '2px solid rgba(124,58,237,0.25)',
             overflow: 'hidden',
             width: 220,
+            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
           }}
+          onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'rotate(5deg) scale(1.04)'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'rotate(5deg)'; }}
         >
           <img
             src="/poster1.jpeg"
