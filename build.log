@@ -1,0 +1,62 @@
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\umasa\package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * C:\Users\umasa\Downloads\samagra\pnpm-lock.yaml
+
+▲ Next.js 16.1.6 (Turbopack)
+
+  Creating an optimized production build ...
+Error: Cannot apply unknown utility class `border-border`
+    [2m[at onInvalidCandidate (C:\Users\umasa\Downloads\samagra\node_modules\.pnpm\tailwindcss@4.2.0\node_modules\tailwindcss\dist\lib.js:21:1511)][0m
+    [2m[at Ee (C:\Users\umasa\Downloads\samagra\node_modules\.pnpm\tailwindcss@4.2.0\node_modules\tailwindcss\dist\lib.js:16:37066)][0m
+    [2m[at C:\Users\umasa\Downloads\samagra\node_modules\.pnpm\tailwindcss@4.2.0\node_modules\tailwindcss\dist\lib.js:21:355][0m
+    [2m[at Pr (C:\Users\umasa\Downloads\samagra\node_modules\.pnpm\tailwindcss@4.2.0\node_modules\tailwindcss\dist\lib.js:3:1733)][0m
+    [2m[at _ (C:\Users\umasa\Downloads\samagra\node_modules\.pnpm\tailwindcss@4.2.0\node_modules\tailwindcss\dist\lib.js:3:1377)][0m
+    [2m[at Te (C:\Users\umasa\Downloads\samagra\node_modules\.pnpm\tailwindcss@4.2.0\node_modules\tailwindcss\dist\lib.js:21:172)][0m
+    [2m[at pn (C:\Users\umasa\Downloads\samagra\node_modules\.pnpm\tailwindcss@4.2.0\node_modules\tailwindcss\dist\lib.js:38:294)][0m
+    [2m[at async dn (C:\Users\umasa\Downloads\samagra\node_modules\.pnpm\tailwindcss@4.2.0\node_modules\tailwindcss\dist\lib.js:38:631)][0m
+    [2m[at async Xr (C:\Users\umasa\Downloads\samagra\node_modules\.pnpm\@tailwindcss+node@4.2.0\node_modules\@tailwindcss\node\dist\index.js:10:3417)][0m
+    [2m[at async N (C:\Users\umasa\Downloads\samagra\node_modules\.pnpm\@tailwindcss+postcss@4.2.0\node_modules\@tailwindcss\postcss\dist\index.js:10:3979)][0m
+
+> Build error occurred
+Error: Turbopack build failed with 2 errors:
+./Downloads/samagra/app/globals.css
+Error evaluating Node.js code
+CssSyntaxError: tailwindcss: C:\Users\umasa\Downloads\samagra\app\globals.css:1:1: Cannot apply unknown utility class `border-border`
+    at Input.error (Downloads/samagra/node_modules/.pnpm/postcss@8.5.6/node_modules/postcss/lib/input.js:135:16) [C:\Users\umasa\Downloads\samagra\.next\build\chunks\9706a__pnpm_f8c474d0._.js:4651:22]
+    at Root.error (Downloads/samagra/node_modules/.pnpm/postcss@8.5.6/node_modules/postcss/lib/node.js:146:32) [C:\Users\umasa\Downloads\samagra\.next\build\chunks\9706a__pnpm_f8c474d0._.js:928:38]
+    [at Object.Once (C:\Users\umasa\Downloads\samagra\node_modules\.pnpm\@tailwindcss+postcss@4.2.0\node_modules\@tailwindcss\postcss\dist\index.js:10:6913)]
+    at async LazyResult.runAsync (Downloads/samagra/node_modules/.pnpm/postcss@8.5.6/node_modules/postcss/lib/lazy-result.js:293:11) [C:\Users\umasa\Downloads\samagra\.next\build\chunks\9706a__pnpm_f8c474d0._.js:6206:21]
+    at async transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:34) [C:\Users\umasa\Downloads\samagra\.next\build\chunks\[root-of-the-server]__e9efd8c5._.js:146:36]
+    at async run (turbopack:///[turbopack-node]/ipc/evaluate.ts:92:23) [C:\Users\umasa\Downloads\samagra\.next\build\chunks\[root-of-the-server]__0d199528._.js:443:31]
+
+Import trace:
+  Client Component Browser:
+    ./Downloads/samagra/app/globals.css [Client Component Browser]
+    ./Downloads/samagra/app/layout.tsx [Server Component]
+
+
+./Downloads/samagra/app/page.tsx:11:17
+Ecmascript file had an error
+[0m [90m  9 |[39m [36mimport[39m { [33mFooter[39m } [36mfrom[39m [32m'@/components/footer'[39m[33m;[39m
+ [90m 10 |[39m
+[31m[1m>[22m[39m[90m 11 |[39m [36mconst[39m [33mAIScene[39m [33m=[39m dynamic(
+ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+[31m[1m>[22m[39m[90m 12 |[39m   () [33m=>[39m [36mimport[39m([32m'@/components/ai-scene'[39m)[33m.[39mthen(mod [33m=>[39m ({ [36mdefault[39m[33m:[39m mod[33m.[39m[33mAIScene[39m }))[33m,[39m
+ [90m    |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+[31m[1m>[22m[39m[90m 13 |[39m   { ssr[33m:[39m [36mfalse[39m[33m,[39m loading[33m:[39m () [33m=>[39m [33m<[39m[33mdiv[39m className[33m=[39m[32m"w-full h-screen bg-background"[39m [33m/[39m[33m>[39m }
+ [90m    |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+[31m[1m>[22m[39m[90m 14 |[39m )[33m;[39m
+ [90m    |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 15 |[39m
+ [90m 16 |[39m [36mexport[39m [36mdefault[39m [36mfunction[39m [33mHome[39m() {
+ [90m 17 |[39m   [36mreturn[39m ([0m
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+    at async transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:34) [C:\Users\umasa\Downloads\samagra\.next\build\chunks\[root-of-the-server]__e9efd8c5._.js:146:36])
+    at async run (turbopack:///[turbopack-node]/ipc/evaluate.ts:92:23) [C:\Users\umasa\Downloads\samagra\.next\build\chunks\[root-of-the-server]__0d199528._.js:443:31])
+    at <unknown> (./Downloads/samagra/app/page.tsx:11:17)
