@@ -525,88 +525,19 @@ export function RegistrationForm() {
                   Scan QR with Google Pay / PhonePe / Paytm
                 </p>
 
-                {/* QR Code */}
+                {/* QR Code — no white frame */}
                 <div className="flex justify-center mb-4">
-                  <div
-                    className="p-3 rounded-2xl"
-                    style={{
-                      background: '#ffffff',
-                      boxShadow: '0 0 40px rgba(0,212,255,0.2)',
-                    }}
-                  >
-                    <img
-                      src="/qr.png"
-                      alt="UPI Payment QR Code — scan with Google Pay, PhonePe or Paytm"
-                      width={200}
-                      height={200}
-                      style={{ display: 'block', width: 200, height: 200, objectFit: 'contain' }}
-                    />
-                  </div>
-                </div>
-
-                {/* UPI logos */}
-                <div className="flex items-center justify-center gap-3 mb-4" aria-label="Accepted UPI apps">
-                  {[
-                    { name: 'GPay', bg: '#4285f4', text: 'G' },
-                    { name: 'PhonePe', bg: '#5f259f', text: 'P' },
-                    { name: 'Paytm', bg: '#002970', text: 'Pt' },
-                    { name: 'BHIM', bg: '#1a6f3c', text: 'B' },
-                  ].map((app) => (
-                    <div
-                      key={app.name}
-                      className="flex flex-col items-center gap-1"
-                      aria-label={app.name}
-                    >
-                      <div
-                        className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs font-bold"
-                        style={{ background: app.bg }}
-                        aria-hidden="true"
-                      >
-                        {app.text}
-                      </div>
-                      <span className="font-space text-[10px] text-slate-600">{app.name}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* UPI ID display */}
-                <div
-                  className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl"
-                  style={{
-                    background: 'rgba(0,212,255,0.04)',
-                    border: '1px solid rgba(0,212,255,0.15)',
-                  }}
-                >
-                  <div className="text-left min-w-0">
-                    <p className="font-space text-[10px] text-slate-600 uppercase tracking-wider">UPI ID</p>
-                    <p className="font-mono-code text-sm text-cyan-300 font-bold truncate">{config.upiId}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={copyUpiId}
-                    className="btn-neon-cyan px-3 py-1.5 rounded-lg text-xs flex-shrink-0 flex items-center gap-1.5"
-                    aria-label="Copy UPI ID"
-                  >
-                    {upiCopied ? (
-                      <>
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                        </svg>
-                        Copied!
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-                        Copy
-                      </>
-                    )}
-                  </button>
+                  <img
+                    src="/qr.png"
+                    alt="UPI Payment QR Code — scan with Google Pay, PhonePe or Paytm"
+                    width={200}
+                    height={200}
+                    style={{ display: 'block', width: 200, height: 200, objectFit: 'contain', borderRadius: 12 }}
+                  />
                 </div>
 
                 {/* Amount highlight */}
-                <div className="mt-3 flex items-center justify-center gap-2">
+                <div className="flex items-center justify-center gap-2">
                   <svg className="w-4 h-4 text-yellow-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                     <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
@@ -614,39 +545,6 @@ export function RegistrationForm() {
                     Pay exactly <span className="font-bold">₹{totalAmount}</span> — no more, no less
                   </p>
                 </div>
-              </div>
-
-              {/* How to pay steps */}
-              <div
-                className="rounded-xl p-4 mb-5"
-                style={{
-                  background: 'rgba(0,255,136,0.03)',
-                  border: '1px solid rgba(0,255,136,0.12)',
-                }}
-              >
-                <p className="font-space text-xs font-semibold text-green-400 uppercase tracking-widest mb-3">
-                  How to Pay
-                </p>
-                <ol className="space-y-2" role="list">
-                  {[
-                    'Open Google Pay, PhonePe, Paytm or any UPI app',
-                    `Scan the QR code above or send to ${config.upiId}`,
-                    `Enter amount ₹${totalAmount} and pay`,
-                    'Copy the Transaction ID from your payment app',
-                    'Take a screenshot and upload below',
-                  ].map((step, i) => (
-                    <li key={i} className="flex items-start gap-2.5">
-                      <span
-                        className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold font-orbitron"
-                        style={{ background: 'rgba(0,255,136,0.15)', color: '#00ff88', border: '1px solid rgba(0,255,136,0.3)' }}
-                        aria-hidden="true"
-                      >
-                        {i + 1}
-                      </span>
-                      <span className="font-space text-xs text-slate-400 leading-relaxed">{step}</span>
-                    </li>
-                  ))}
-                </ol>
               </div>
 
               {/* Transaction ID */}

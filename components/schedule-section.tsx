@@ -42,10 +42,12 @@ export function ScheduleSection() {
 
                 {/* Timeline */}
                 <div className="relative stagger-children">
-                    {/* Vertical line */}
+                    {/* Vertical line — runs only between first and last dots */}
                     <div
-                        className="absolute left-8 sm:left-1/2 top-0 bottom-0 w-px"
+                        className="absolute left-8 sm:left-1/2 w-px"
                         style={{
+                            top: '1.25rem',   /* aligns with center of first dot (top-5) */
+                            bottom: '1.25rem', /* stops at center of last dot */
                             background: 'linear-gradient(180deg, #00d4ff33 0%, #7c3aed33 50%, #00ff8833 100%)',
                             transform: 'translateX(-50%)',
                         }}
