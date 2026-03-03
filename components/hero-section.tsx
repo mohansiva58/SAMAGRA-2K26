@@ -12,8 +12,8 @@ const FULL_TEXT = 'PROMPT ENGINEERING';
 
 export function HeroSection() {
   const [displayText, setDisplayText] = useState('');
-  const [cursorVisible, setCursorVisible] = useState(true);
   const [doneTyping, setDoneTyping] = useState(false);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
 
   useEffect(() => {
     let idx = 0;
@@ -149,7 +149,7 @@ export function HeroSection() {
 
         {/* Stats strip */}
         <div
-          className="reveal stagger-children grid grid-cols-3 gap-4 max-w-xl mx-auto"
+          className="reveal grid grid-cols-3 gap-4 max-w-xl mx-auto"
           style={{ transitionDelay: '520ms' }}
         >
           {[
@@ -168,13 +168,13 @@ export function HeroSection() {
       </div>
 
       {/* ── Hanging Posters ── */}
-      {/* Left poster — poster2 (CSD/CSIT Prompt Engineering poster) → scrolls to About */}
+
+      {/* Left poster — poster2 → scrolls to About */}
       <div
         className="hidden lg:flex flex-col items-center absolute left-4 xl:left-10 top-20 z-10 cursor-pointer"
-        onClick={() => scrollTo('about')}
-        title="What is Prompt Engineering?"
         aria-hidden="true"
         style={{ animation: 'swayLeft 6s ease-in-out infinite' }}
+        onClick={() => setLightboxSrc('/poster2.png')}
       >
         {/* Pin */}
         <svg width="18" height="22" viewBox="0 0 18 22" fill="none" style={{ zIndex: 2 }}>
@@ -194,10 +194,7 @@ export function HeroSection() {
             border: '2px solid rgba(0,212,255,0.25)',
             overflow: 'hidden',
             width: 200,
-            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
           }}
-          onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'rotate(-5deg) scale(1.04)'; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'rotate(-5deg)'; }}
         >
           <img
             src="/poster2.png"
@@ -207,12 +204,11 @@ export function HeroSection() {
         </div>
       </div>
 
-      {/* Right poster — poster1 (national level event poster) → scrolls to Registration */}
+      {/* Right poster — poster1 → scrolls to Registration */}
       <div
         className="hidden lg:flex flex-col items-center absolute right-4 xl:right-10 top-20 z-10 cursor-pointer"
-        onClick={() => scrollTo('registration')}
-        title="Register Now"
         style={{ animation: 'swayRight 7s ease-in-out infinite' }}
+        onClick={() => setLightboxSrc('/poster1.jpeg')}
       >
         {/* Pin */}
         <svg width="18" height="22" viewBox="0 0 18 22" fill="none" style={{ zIndex: 2 }}>
@@ -232,10 +228,7 @@ export function HeroSection() {
             border: '2px solid rgba(124,58,237,0.25)',
             overflow: 'hidden',
             width: 220,
-            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
           }}
-          onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'rotate(5deg) scale(1.04)'; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'rotate(5deg)'; }}
         >
           <img
             src="/poster1.jpeg"
@@ -245,6 +238,43 @@ export function HeroSection() {
         </div>
       </div>
 
+      {/* ── Fullscreen Lightbox on Hover ── */}
+      {lightboxSrc && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{
+            background: 'rgba(0,0,0,0.88)',
+            backdropFilter: 'blur(12px)',
+            animation: 'fadeInScale 0.2s ease-out',
+          }}
+          onClick={() => setLightboxSrc(null)}
+          aria-modal="true"
+          role="dialog"
+          aria-label="Poster fullscreen preview"
+        >
+          <img
+            src={lightboxSrc}
+            alt="Event poster fullscreen"
+            style={{
+              maxWidth: '90vw',
+              maxHeight: '90vh',
+              objectFit: 'contain',
+              borderRadius: 16,
+              boxShadow: '0 0 80px rgba(0,212,255,0.25)',
+              border: '1px solid rgba(255,255,255,0.1)',
+            }}
+          />
+          {/* Close hint */}
+          <div
+            className="absolute top-6 right-6 font-space text-xs text-slate-400 flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Click to close
+          </div>
+        </div>
+      )}
 
       {/* Scroll indicator */}
       <div

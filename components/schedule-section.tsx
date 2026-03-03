@@ -41,7 +41,7 @@ export function ScheduleSection() {
                 </div>
 
                 {/* Timeline */}
-                <div className="relative stagger-children">
+                <div className="relative">
                     {/* Vertical line — runs only between first and last dots */}
                     <div
                         className="absolute left-8 sm:left-1/2 w-px"
@@ -57,8 +57,8 @@ export function ScheduleSection() {
                     {schedule.map((item, i) => (
                         <div
                             key={i}
-                            className={`relative flex gap-6 sm:gap-0 items-start mb-8 last:mb-0 ${i % 2 === 0 ? 'sm:flex-row' : 'sm:flex-row-reverse'
-                                }`}
+                            className={`reveal relative flex gap-6 sm:gap-0 items-start mb-8 last:mb-0 ${i % 2 === 0 ? 'sm:flex-row' : 'sm:flex-row-reverse'}`}
+                            style={{ transitionDelay: `${i * 80}ms` }}
                         >
                             {/* Content */}
                             <div className={`w-full pl-16 sm:pl-0 sm:w-5/12 ${i % 2 === 0 ? 'sm:pr-10 sm:text-right' : 'sm:pl-10'}`}>
