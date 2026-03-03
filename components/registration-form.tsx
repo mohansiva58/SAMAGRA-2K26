@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
+import { ref, push, set } from 'firebase/database';
+import { rtdb } from '@/lib/firebase';
 
 // ─── CONFIG ────────────────────────────────────────────────────────────────────
 const config = {
@@ -19,6 +21,11 @@ type FormData = {
   email: string;
   phone: string;
   eventType: string[];
+  // Team fields
+  teamName: string;
+  numberOfParticipants: string;
+  teamLeadName: string;
+  teamLeadPhone: string;
 };
 
 type PaymentData = {
@@ -49,6 +56,8 @@ const years = [
   { value: '4', label: '4th Year' },
 ];
 
+const participantOptions = ['1', '2', '3'];
+
 const eventOptions = [
   {
     value: 'technical-presentation',
@@ -77,6 +86,12 @@ function validateStep1(data: FormData): FormErrors {
     errors.phone = 'Enter a valid 10-digit Indian phone number';
   if (data.eventType.length === 0)
     errors.eventType = 'Please select at least one event';
+  // Team validations
+  if (!data.teamName.trim()) errors.teamName = 'Team name is required';
+  if (!data.numberOfParticipants) errors.numberOfParticipants = 'Please select number of participants';
+  if (!data.teamLeadName.trim()) errors.teamLeadName = 'Team lead name is required';
+  if (!data.teamLeadPhone.match(/^[6-9]\d{9}$/))
+    errors.teamLeadPhone = 'Enter a valid 10-digit mobile number';
   return errors;
 }
 
@@ -200,6 +215,22 @@ function PriceBadge({ count, amount }: { count: number; amount: number }) {
   );
 }
 
+// ─── SECTION DIVIDER ──────────────────────────────────────────────────────────
+function SectionDivider({ title }: { title: string }) {
+  return (
+    <div className="flex items-center gap-3 my-6">
+      <div className="flex-1 h-px" style={{ background: 'rgba(0,212,255,0.12)' }} />
+      <span
+        className="font-space text-[10px] uppercase tracking-widest px-2"
+        style={{ color: '#00d4ff99' }}
+      >
+        {title}
+      </span>
+      <div className="flex-1 h-px" style={{ background: 'rgba(0,212,255,0.12)' }} />
+    </div>
+  );
+}
+
 // ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
 export function RegistrationForm() {
   const [step, setStep] = useState(1);
@@ -211,6 +242,10 @@ export function RegistrationForm() {
     email: '',
     phone: '',
     eventType: [],
+    teamName: '',
+    numberOfParticipants: '',
+    teamLeadName: '',
+    teamLeadPhone: '',
   });
   const [payment, setPayment] = useState<PaymentData>({
     transactionId: '',
@@ -220,6 +255,7 @@ export function RegistrationForm() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
   const [upiCopied, setUpiCopied] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const totalAmount = formData.eventType.length * config.pricePerEvent;
@@ -295,7 +331,7 @@ export function RegistrationForm() {
     }, 100);
   };
 
-  // ── Step 2 → 3 (Submit) ──
+  // ── Step 2 → 3 (Submit to Firebase) ──
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs = validateStep2(payment);
@@ -304,10 +340,54 @@ export function RegistrationForm() {
       return;
     }
     setLoading(true);
-    // Simulate API call
-    await new Promise((r) => setTimeout(r, 1800));
-    setLoading(false);
-    setStep(3);
+    setSubmitError('');
+
+    try {
+      // 1. Convert screenshot to base64 (stored directly in RTDB — no Storage/CORS needed)
+      let screenshotBase64 = '';
+      if (payment.screenshotFile) {
+        screenshotBase64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target?.result as string ?? '');
+          reader.onerror = reject;
+          reader.readAsDataURL(payment.screenshotFile!);
+        });
+      }
+
+      // 2. Save everything to Firebase Realtime Database
+      const registrationsRef = ref(rtdb, 'registrations');
+      const newEntryRef = push(registrationsRef);
+      await set(newEntryRef, {
+        // Personal details
+        fullName: formData.fullName.trim(),
+        collegeName: formData.collegeName.trim(),
+        branch: formData.branch,
+        year: formData.year,
+        email: formData.email.trim().toLowerCase(),
+        phone: formData.phone.trim(),
+        // Team details
+        teamName: formData.teamName.trim(),
+        numberOfParticipants: formData.numberOfParticipants,
+        teamLeadName: formData.teamLeadName.trim(),
+        teamLeadPhone: formData.teamLeadPhone.trim(),
+        // Event selection
+        events: formData.eventType,
+        // Payment info
+        totalAmount,
+        transactionId: payment.transactionId.trim(),
+        screenshotBase64,           // stored directly — no Storage needed
+        // Metadata
+        status: 'pending_verification',
+        submittedAt: new Date().toISOString(),
+      });
+
+      setLoading(false);
+      setStep(3);
+    } catch (err) {
+      console.error('Submission error:', err);
+      setSubmitError('Failed to submit. Please check your connection and try again.');
+      setLoading(false);
+    }
   };
 
   const inputClass = (field: string) =>
@@ -357,6 +437,9 @@ export function RegistrationForm() {
               </p>
 
               <div className="space-y-4">
+                {/* ── Personal Info ── */}
+                <SectionDivider title="Personal Info" />
+
                 {/* Name */}
                 <div>
                   <label htmlFor="fullName" className="block font-space text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
@@ -431,6 +514,104 @@ export function RegistrationForm() {
                   </div>
                   {errors.phone && <p className="font-space text-xs text-red-400 mt-1" role="alert">{errors.phone}</p>}
                 </div>
+
+                {/* ── Team Info ── */}
+                <SectionDivider title="Team Info" />
+
+                {/* Team Name */}
+                <div>
+                  <label htmlFor="teamName" className="block font-space text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+                    Name of the Team <span className="text-red-400" aria-hidden="true">*</span>
+                  </label>
+                  <input type="text" id="teamName" name="teamName" value={formData.teamName}
+                    onChange={handleChange} placeholder="e.g. Team Nexus"
+                    autoComplete="off" className={inputClass('teamName')} aria-required="true" />
+                  {errors.teamName && <p className="font-space text-xs text-red-400 mt-1" role="alert">{errors.teamName}</p>}
+                </div>
+
+                {/* Number of Participants */}
+                <div>
+                  <fieldset>
+                    <legend className="block font-space text-xs font-semibold text-slate-300 mb-3 uppercase tracking-wider">
+                      Number of Participants <span className="text-red-400" aria-hidden="true">*</span>
+                    </legend>
+                    <div className="grid grid-cols-3 gap-2">
+                      {participantOptions.map((num) => {
+                        const isSelected = formData.numberOfParticipants === num;
+                        return (
+                          <label
+                            key={num}
+                            className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl cursor-pointer transition-all duration-200 select-none"
+                            style={{
+                              background: isSelected
+                                ? 'linear-gradient(135deg, rgba(0,212,255,0.12), rgba(124,58,237,0.12))'
+                                : 'rgba(13,17,23,0.6)',
+                              border: `1px solid ${isSelected ? 'rgba(0,212,255,0.45)' : 'rgba(255,255,255,0.06)'}`,
+                              boxShadow: isSelected ? '0 0 12px rgba(0,212,255,0.1)' : 'none',
+                            }}
+                          >
+                            <input
+                              type="radio"
+                              name="numberOfParticipants"
+                              value={num}
+                              checked={isSelected}
+                              onChange={handleChange}
+                              className="sr-only"
+                              aria-label={`${num} participant${num !== '1' ? 's' : ''}`}
+                            />
+                            <span
+                              className="font-orbitron font-bold text-xl"
+                              style={{
+                                color: isSelected ? '#00d4ff' : '#64748b',
+                              }}
+                            >
+                              {num}
+                            </span>
+                            <span className="font-space text-[10px] uppercase tracking-wider"
+                              style={{ color: isSelected ? '#00d4ff80' : '#374151' }}>
+                              {num === '1' ? 'Solo' : num === '2' ? 'Duo' : 'Trio'}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                    {errors.numberOfParticipants && (
+                      <p className="font-space text-xs text-red-400 mt-2" role="alert">{errors.numberOfParticipants}</p>
+                    )}
+                  </fieldset>
+                </div>
+
+                {/* Team Lead Name */}
+                <div>
+                  <label htmlFor="teamLeadName" className="block font-space text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+                    Name of the Team Lead <span className="text-red-400" aria-hidden="true">*</span>
+                  </label>
+                  <input type="text" id="teamLeadName" name="teamLeadName" value={formData.teamLeadName}
+                    onChange={handleChange} placeholder="Team lead's full name"
+                    autoComplete="off" className={inputClass('teamLeadName')} aria-required="true" />
+                  {errors.teamLeadName && <p className="font-space text-xs text-red-400 mt-1" role="alert">{errors.teamLeadName}</p>}
+                </div>
+
+                {/* Team Lead Phone */}
+                <div>
+                  <label htmlFor="teamLeadPhone" className="block font-space text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+                    Mobile Number of the Team Lead <span className="text-red-400" aria-hidden="true">*</span>
+                  </label>
+                  <div className="flex gap-2">
+                    <div className="input-glow px-3 py-3 rounded-xl text-sm font-space text-slate-400 flex items-center flex-shrink-0">
+                      +91
+                    </div>
+                    <input type="tel" id="teamLeadPhone" name="teamLeadPhone" value={formData.teamLeadPhone}
+                      onChange={handleChange} placeholder="10-digit number"
+                      autoComplete="off" maxLength={10}
+                      className={`input-glow flex-1 px-4 py-3 rounded-xl text-sm font-space ${errors.teamLeadPhone ? 'border-red-500/60' : ''}`}
+                      aria-required="true" />
+                  </div>
+                  {errors.teamLeadPhone && <p className="font-space text-xs text-red-400 mt-1" role="alert">{errors.teamLeadPhone}</p>}
+                </div>
+
+                {/* ── Event Selection ── */}
+                <SectionDivider title="Event Selection" />
 
                 {/* Event Selection */}
                 <div>
@@ -525,7 +706,6 @@ export function RegistrationForm() {
                   Scan QR with Google Pay / PhonePe / Paytm
                 </p>
 
-                {/* QR Code — no white frame */}
                 <div className="flex justify-center mb-4">
                   <img
                     src="/qr.png"
@@ -579,7 +759,6 @@ export function RegistrationForm() {
                 </label>
 
                 {payment.screenshotPreview ? (
-                  // Preview
                   <div className="relative rounded-xl overflow-hidden border border-cyan-500/30">
                     <img
                       src={payment.screenshotPreview}
@@ -607,7 +786,6 @@ export function RegistrationForm() {
                     </div>
                   </div>
                 ) : (
-                  // Upload zone
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
@@ -637,11 +815,22 @@ export function RegistrationForm() {
                 )}
               </div>
 
+              {/* Submit error */}
+              {submitError && (
+                <div
+                  className="mb-4 p-3 rounded-xl font-space text-xs text-red-400"
+                  style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)' }}
+                  role="alert"
+                >
+                  ⚠ {submitError}
+                </div>
+              )}
+
               {/* Action buttons */}
               <div className="flex gap-3">
                 <button
                   type="button"
-                  onClick={() => { setStep(1); setErrors({}); }}
+                  onClick={() => { setStep(1); setErrors({}); setSubmitError(''); }}
                   className="flex-shrink-0 px-5 py-4 rounded-xl font-space text-sm text-slate-400 hover:text-slate-200 transition-colors cursor-pointer flex items-center gap-2"
                   style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}
                   aria-label="Go back to details"
@@ -664,7 +853,7 @@ export function RegistrationForm() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
-                      Verifying...
+                      Submitting...
                     </>
                   ) : (
                     <>
@@ -717,6 +906,9 @@ export function RegistrationForm() {
                 {[
                   { label: 'Name', value: formData.fullName },
                   { label: 'College', value: formData.collegeName },
+                  { label: 'Team', value: formData.teamName },
+                  { label: 'Participants', value: formData.numberOfParticipants },
+                  { label: 'Team Lead', value: formData.teamLeadName },
                   { label: 'Events', value: formData.eventType.map((e) => eventOptions.find((o) => o.value === e)?.label).join(', ') },
                   { label: 'Amount Paid', value: `₹${totalAmount}` },
                   { label: 'Transaction ID', value: payment.transactionId },
@@ -735,9 +927,9 @@ export function RegistrationForm() {
                   border: '1px solid rgba(0,255,136,0.15)',
                 }}
               >
-                <p className="font-space text-sm text-green-400 mb-1 font-semibold">What's Next?</p>
+                <p className="font-space text-sm text-green-400 mb-1 font-semibold">What&apos;s Next?</p>
                 <p className="font-space text-xs text-slate-500 leading-relaxed">
-                  Your payment will be verified by our team. You'll receive confirmation details at the event.
+                  Your payment will be verified by our team. You&apos;ll receive confirmation details at the event.
                   Contact coordinators if you have any queries.
                 </p>
               </div>
@@ -776,7 +968,7 @@ export function RegistrationForm() {
               <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
             </svg>
             <p className="font-space text-[11px] text-slate-600">
-              Secure registration · Your data is used only for event coordination
+              Secure registration · Your data is saved to our database for event coordination
             </p>
           </div>
         )}
