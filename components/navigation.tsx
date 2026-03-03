@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const navLinks = [
   { label: 'About', id: 'about' },
@@ -15,6 +17,8 @@ export function Navigation() {
   const [activeSection, setActiveSection] = useState('hero');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrollPercent, setScrollPercent] = useState(0);
+  const pathname = usePathname();
+  const isHome = pathname === '/';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,7 +27,7 @@ export function Navigation() {
       setIsScrolled(scrollY > 60);
       setScrollPercent((scrollY / docHeight) * 100);
 
-      // Update active section
+      if (!isHome) return;
       const sections = ['hero', 'about', 'events', 'schedule', 'registration', 'coordinators'];
       for (let i = sections.length - 1; i >= 0; i--) {
         const el = document.getElementById(sections[i]);
@@ -36,9 +40,13 @@ export function Navigation() {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isHome]);
 
   const scrollTo = (id: string) => {
+    if (!isHome) {
+      window.location.href = `/#${id}`;
+      return;
+    }
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
     setMobileOpen(false);
   };
@@ -56,8 +64,8 @@ export function Navigation() {
 
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled
-            ? 'glass border-b border-cyan-500/10 py-3 shadow-lg shadow-cyan-500/5'
-            : 'bg-transparent py-5'
+          ? 'glass border-b border-cyan-500/10 py-3 shadow-lg shadow-cyan-500/5'
+          : 'bg-transparent py-5'
           }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
@@ -84,15 +92,30 @@ export function Navigation() {
               <li key={link.id}>
                 <button
                   onClick={() => scrollTo(link.id)}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 cursor-pointer font-space ${activeSection === link.id
-                      ? 'text-cyan-400 bg-cyan-400/10'
-                      : 'text-slate-400 hover:text-cyan-300 hover:bg-white/5'
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 cursor-pointer font-space ${isHome && activeSection === link.id
+                    ? 'text-cyan-400 bg-cyan-400/10'
+                    : 'text-slate-400 hover:text-cyan-300 hover:bg-white/5'
                     }`}
                 >
                   {link.label}
                 </button>
               </li>
             ))}
+            {/* Gallery page link */}
+            <li>
+              <Link
+                href="/gallery"
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 font-space flex items-center gap-1.5 ${pathname === '/gallery'
+                  ? 'text-cyan-400 bg-cyan-400/10'
+                  : 'text-slate-400 hover:text-cyan-300 hover:bg-white/5'
+                  }`}
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Gallery
+              </Link>
+            </li>
           </ul>
 
           {/* CTA + Mobile Toggle */}
@@ -130,7 +153,7 @@ export function Navigation() {
 
         {/* Mobile Drawer */}
         <div
-          className={`md:hidden overflow-hidden transition-all duration-400 ease-in-out ${mobileOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          className={`md:hidden overflow-hidden transition-all duration-400 ease-in-out ${mobileOpen ? 'max-h-[28rem] opacity-100' : 'max-h-0 opacity-0'
             }`}
         >
           <div className="glass border-t border-cyan-500/10 px-4 py-4 space-y-1">
@@ -138,14 +161,28 @@ export function Navigation() {
               <button
                 key={link.id}
                 onClick={() => scrollTo(link.id)}
-                className={`w-full text-left px-4 py-3 rounded-lg text-sm font-space font-medium transition-all duration-200 cursor-pointer ${activeSection === link.id
-                    ? 'text-cyan-400 bg-cyan-400/10'
-                    : 'text-slate-400 hover:text-cyan-300 hover:bg-white/5'
+                className={`w-full text-left px-4 py-3 rounded-lg text-sm font-space font-medium transition-all duration-200 cursor-pointer ${isHome && activeSection === link.id
+                  ? 'text-cyan-400 bg-cyan-400/10'
+                  : 'text-slate-400 hover:text-cyan-300 hover:bg-white/5'
                   }`}
               >
                 {link.label}
               </button>
             ))}
+            {/* Gallery link mobile */}
+            <Link
+              href="/gallery"
+              onClick={() => setMobileOpen(false)}
+              className={`w-full text-left px-4 py-3 rounded-lg text-sm font-space font-medium transition-all duration-200 flex items-center gap-2 ${pathname === '/gallery'
+                ? 'text-cyan-400 bg-cyan-400/10'
+                : 'text-slate-400 hover:text-cyan-300 hover:bg-white/5'
+                }`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              Gallery
+            </Link>
             <button
               onClick={() => scrollTo('registration')}
               className="w-full btn-primary-gradient px-4 py-3 rounded-xl text-sm font-space font-bold mt-2"
