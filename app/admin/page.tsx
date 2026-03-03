@@ -107,7 +107,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
                                 type="email"
                                 value={email}
                                 onChange={(e) => { setEmail(e.target.value); setError(''); }}
-                                placeholder="admin@samagra2026.com"
+                                placeholder="Enter Admin Email"
                                 autoComplete="email"
                                 required
                                 className="input-glow w-full px-4 py-3 rounded-xl text-sm font-space"
