@@ -24,6 +24,27 @@ type GalleryCategory = {
     images: GalleryImage[];
 };
 
+type Registration = {
+    id: string;
+    fullName: string;
+    collegeName: string;
+    branch: string;
+    year: string;
+    email: string;
+    phone: string;
+    teamName: string;
+    numberOfParticipants: string;
+    teamLeadName: string;
+    teamLeadPhone: string;
+    events: string[];
+    paymentMethod: string;
+    totalAmount: number;
+    transactionId: string;
+    screenshotBase64?: string;
+    status: string;
+    submittedAt: string;
+};
+
 // ─── IMAGE COMPRESSOR ────────────────────────────────────────────────────────
 async function compressImage(file: File, maxPx = 1200, quality = 0.72): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -71,7 +92,6 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
 
     return (
         <div className="min-h-screen flex items-center justify-center px-4" style={{ background: '#030712' }}>
-            {/* Background glow */}
             <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
                 <div className="absolute inset-0 grid-bg opacity-10" />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full"
@@ -79,13 +99,11 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
             </div>
 
             <div className="relative w-full max-w-md">
-                {/* Logo */}
                 <div className="text-center mb-8">
                     <span className="font-orbitron text-2xl font-black gradient-text-animated tracking-widest">SAMAGRA</span>
                     <p className="font-space text-xs text-slate-500 tracking-widest uppercase mt-1">Admin Dashboard · 2026</p>
                 </div>
 
-                {/* Card */}
                 <div className="form-card p-8" style={{ border: '1px solid rgba(124,58,237,0.2)' }}>
                     <div className="flex items-center gap-3 mb-6">
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center"
@@ -96,7 +114,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
                         </div>
                         <div>
                             <h1 className="font-orbitron font-bold text-lg text-white">Admin Login</h1>
-                            <p className="font-space text-xs text-slate-500">Gallery management portal</p>
+                            <p className="font-space text-xs text-slate-500">Access management portal</p>
                         </div>
                     </div>
 
@@ -129,11 +147,10 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
                                     type="button"
                                     onClick={() => setShowPass((p) => !p)}
                                     className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
-                                    aria-label={showPass ? 'Hide password' : 'Show password'}
                                 >
                                     {showPass ? (
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268-2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
                                         </svg>
                                     ) : (
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -157,37 +174,17 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
                             disabled={loading}
                             className="w-full btn-primary-gradient py-3 rounded-xl font-space font-bold text-sm flex items-center justify-center gap-2 mt-2 disabled:opacity-60"
                         >
-                            {loading ? (
-                                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                                </svg>
-                            ) : (
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                                </svg>
-                            )}
                             {loading ? 'Signing in…' : 'Sign In'}
                         </button>
                     </form>
                 </div>
-
-                <p className="text-center font-space text-xs text-slate-700 mt-6">
-                    SAMAGRA 2026 · Faculty Admin Panel
-                </p>
             </div>
         </div>
     );
 }
 
 // ─── UPLOAD MODAL ─────────────────────────────────────────────────────────────
-function UploadModal({
-    category,
-    onClose,
-}: {
-    category: GalleryCategory;
-    onClose: () => void;
-}) {
+function UploadModal({ category, onClose }: { category: GalleryCategory; onClose: () => void }) {
     const [files, setFiles] = useState<{ file: File; preview: string; caption: string }[]>([]);
     const [uploading, setUploading] = useState(false);
     const [progress, setProgress] = useState(0);
@@ -207,162 +204,52 @@ function UploadModal({
         setFiles((prev) => [...prev, ...mapped]);
     };
 
-    const removeFile = (index: number) => {
-        setFiles((prev) => prev.filter((_, i) => i !== index));
-    };
-
-    const updateCaption = (index: number, caption: string) => {
-        setFiles((prev) => prev.map((f, i) => i === index ? { ...f, caption } : f));
-    };
-
     const handleUpload = async () => {
         if (files.length === 0) return;
         setUploading(true);
         setProgress(0);
-
         for (let i = 0; i < files.length; i++) {
             const { file, caption } = files[i];
             const compressed = await compressImage(file);
             const imagesRef = ref(rtdb, `gallery/${category.id}/images`);
             const newRef = push(imagesRef);
-            await set(newRef, {
-                data: compressed,
-                caption: caption.trim(),
-                uploadedAt: new Date().toISOString(),
-            });
+            await set(newRef, { data: compressed, caption: caption.trim(), uploadedAt: new Date().toISOString() });
             setProgress(Math.round(((i + 1) / files.length) * 100));
         }
-
         setUploading(false);
         setDone(true);
     };
 
     return (
-        <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ background: 'rgba(0,0,0,0.85)' }}
-            onClick={onClose}
-        >
-            <div
-                className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl p-6"
-                style={{ background: '#0d1117', border: '1px solid rgba(0,212,255,0.2)' }}
-                onClick={(e) => e.stopPropagation()}
-            >
-                {/* Header */}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80" onClick={onClose}>
+            <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl p-6 bg-[#0d1117] border border-cyan-500/20" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center justify-between mb-5">
-                    <div>
-                        <h2 className="font-orbitron font-bold text-lg text-white">Upload Photos</h2>
-                        <p className="font-space text-xs text-slate-500 mt-0.5">to — {category.name}</p>
-                    </div>
-                    <button onClick={onClose} className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/10 transition-colors">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                    <h2 className="font-orbitron font-bold text-lg text-white">Upload Photos to {category.name}</h2>
+                    <button onClick={onClose} className="text-slate-500 hover:text-white">✕</button>
                 </div>
-
                 {done ? (
-                    <div className="text-center py-12">
-                        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
-                            style={{ background: 'linear-gradient(135deg, #00d4ff, #7c3aed)' }}>
-                            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                            </svg>
-                        </div>
-                        <p className="font-orbitron font-bold text-white text-lg mb-1">Upload Complete!</p>
-                        <p className="font-space text-slate-400 text-sm mb-4">{files.length} photo{files.length !== 1 ? 's' : ''} added to {category.name}</p>
-                        <button onClick={onClose} className="btn-primary-gradient px-6 py-2.5 rounded-xl font-space font-bold text-sm">
-                            Done
-                        </button>
+                    <div className="text-center py-10">
+                        <p className="text-white font-bold mb-4">Complete!</p>
+                        <button onClick={onClose} className="btn-primary-gradient px-6 py-2 rounded-xl">Close</button>
                     </div>
                 ) : (
                     <>
-                        {/* Drop zone */}
-                        <button
-                            type="button"
-                            onClick={() => fileRef.current?.click()}
-                            className="w-full p-8 rounded-xl border-2 border-dashed border-slate-700 hover:border-cyan-500/50 transition-all duration-200 text-center mb-4 cursor-pointer"
-                            style={{ background: 'rgba(13,17,23,0.5)' }}
-                        >
-                            <svg className="w-10 h-10 mx-auto mb-2 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            <p className="font-space text-sm text-slate-400 mb-1">Click to select photos</p>
-                            <p className="font-space text-xs text-slate-600">JPG, PNG, WEBP — Multiple allowed · Auto-compressed</p>
+                        <button onClick={() => fileRef.current?.click()} className="w-full p-8 border-2 border-dashed border-slate-700 rounded-xl mb-4 text-slate-400">
+                            Click to select photos
                         </button>
                         <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
-
-                        {/* Preview grid */}
-                        {files.length > 0 && (
-                            <div className="space-y-3 mb-5 max-h-64 overflow-y-auto pr-1">
-                                {files.map((f, i) => (
-                                    <div key={i} className="flex items-center gap-3 p-3 rounded-xl"
-                                        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                                        <img src={f.preview} alt="" className="w-14 h-14 rounded-lg object-cover flex-shrink-0" />
-                                        <div className="flex-1 min-w-0">
-                                            <p className="font-space text-xs text-slate-400 truncate mb-1.5">{f.file.name}</p>
-                                            <input
-                                                type="text"
-                                                placeholder="Caption (optional)"
-                                                value={f.caption}
-                                                onChange={(e) => updateCaption(i, e.target.value)}
-                                                className="input-glow w-full px-3 py-1.5 rounded-lg text-xs font-space"
-                                            />
-                                        </div>
-                                        <button
-                                            onClick={() => removeFile(i)}
-                                            className="w-7 h-7 flex-shrink-0 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 flex items-center justify-center transition-colors"
-                                            aria-label="Remove image"
-                                        >
-                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        {/* Progress bar */}
-                        {uploading && (
-                            <div className="mb-4">
-                                <div className="flex justify-between font-space text-xs text-slate-500 mb-1.5">
-                                    <span>Compressing & uploading…</span>
-                                    <span>{progress}%</span>
+                        <div className="space-y-3 mb-5 max-h-64 overflow-y-auto">
+                            {files.map((f, i) => (
+                                <div key={i} className="flex gap-3 p-2 bg-white/5 rounded-lg">
+                                    <img src={f.preview} className="w-12 h-12 object-cover rounded" />
+                                    <input type="text" placeholder="Caption" value={f.caption} onChange={(e) => setFiles(prev => prev.map((item, idx) => idx === i ? { ...item, caption: e.target.value } : item))} className="flex-1 bg-black/50 p-2 text-xs rounded" />
                                 </div>
-                                <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
-                                    <div
-                                        className="h-full rounded-full transition-all duration-300"
-                                        style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #00d4ff, #7c3aed)' }}
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Actions */}
-                        <div className="flex gap-3">
-                            <button onClick={onClose} className="flex-1 py-3 rounded-xl font-space text-sm text-slate-400 hover:text-white transition-colors"
-                                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleUpload}
-                                disabled={uploading || files.length === 0}
-                                className="flex-1 btn-primary-gradient py-3 rounded-xl font-space font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {uploading ? (
-                                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                                    </svg>
-                                ) : (
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                    </svg>
-                                )}
-                                Upload {files.length > 0 ? `(${files.length})` : ''}
-                            </button>
+                            ))}
                         </div>
+                        {uploading && <div className="text-cyan-400 text-xs text-center mb-2">Uploading: {progress}%</div>}
+                        <button onClick={handleUpload} disabled={uploading || files.length === 0} className="w-full btn-primary-gradient py-3 rounded-xl disabled:opacity-50">
+                            Upload {files.length} Photos
+                        </button>
                     </>
                 )}
             </div>
@@ -372,386 +259,277 @@ function UploadModal({
 
 // ─── ADMIN DASHBOARD ──────────────────────────────────────────────────────────
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
+    const [view, setView] = useState<'gallery' | 'registrations'>('gallery');
     const [categories, setCategories] = useState<GalleryCategory[]>([]);
+    const [registrations, setRegistrations] = useState<Registration[]>([]);
     const [loading, setLoading] = useState(true);
     const [newCatName, setNewCatName] = useState('');
-    const [addingCat, setAddingCat] = useState(false);
     const [showAddCat, setShowAddCat] = useState(false);
     const [uploadModal, setUploadModal] = useState<GalleryCategory | null>(null);
-    const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'cat' | 'img'; catId: string; imgId?: string } | null>(null);
-    const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [selectedReg, setSelectedReg] = useState<Registration | null>(null);
     const [expandedCats, setExpandedCats] = useState<Set<string>>(new Set());
-    const [editingCatId, setEditingCatId] = useState<string | null>(null);
-    const [editingCatName, setEditingCatName] = useState('');
+    const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'cat' | 'img' | 'reg'; id: string; catId?: string } | null>(null);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         const galleryRef = ref(rtdb, 'gallery');
-        const unsub = onValue(galleryRef, (snapshot) => {
-            const data = snapshot.val();
-            if (!data) { setCategories([]); setLoading(false); return; }
-            const cats: GalleryCategory[] = Object.entries(data).map(([id, val]: [string, unknown]) => {
-                const cat = val as { name: string; createdAt: string; images?: Record<string, Omit<GalleryImage, 'id'>> };
-                const images: GalleryImage[] = cat.images
-                    ? Object.entries(cat.images).map(([imgId, img]) => ({ id: imgId, ...img }))
-                    : [];
-                return { id, name: cat.name, createdAt: cat.createdAt, images };
-            });
-            cats.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-            setCategories(cats);
+        const unsubGallery = onValue(galleryRef, (snap) => {
+            const data = snap.val();
+            if (!data) setCategories([]);
+            else {
+                const cats = Object.entries(data).map(([id, val]: any) => ({
+                    id,
+                    ...val,
+                    images: val.images ? Object.entries(val.images).map(([imgId, img]: any) => ({ id: imgId, ...img })) : []
+                }));
+                setCategories(cats.sort((a, b) => b.createdAt.localeCompare(a.createdAt)));
+            }
+        });
+
+        const regRef = ref(rtdb, 'registrations');
+        const unsubReg = onValue(regRef, (snap) => {
+            const data = snap.val();
+            if (!data) setRegistrations([]);
+            else {
+                const regs = Object.entries(data).map(([id, val]: any) => ({ id, ...val }));
+                setRegistrations(regs.sort((a, b) => b.submittedAt.localeCompare(a.submittedAt)));
+            }
             setLoading(false);
         });
-        return () => unsub();
+
+        return () => { unsubGallery(); unsubReg(); };
     }, []);
 
-    const addCategory = async () => {
-        if (!newCatName.trim()) return;
-        setAddingCat(true);
-        const galleryRef = ref(rtdb, 'gallery');
-        const newRef = push(galleryRef);
-        await set(newRef, { name: newCatName.trim(), createdAt: new Date().toISOString() });
-        setNewCatName('');
-        setShowAddCat(false);
-        setAddingCat(false);
+    const updateStatus = async (id: string, status: string) => {
+        await update(ref(rtdb, `registrations/${id}`), { status });
     };
 
-    const renameCategory = async (catId: string) => {
-        if (!editingCatName.trim()) return;
-        await update(ref(rtdb, `gallery/${catId}`), { name: editingCatName.trim() });
-        setEditingCatId(null);
-    };
-
-    const deleteCategory = async (catId: string) => {
-        setDeletingId(catId);
-        await remove(ref(rtdb, `gallery/${catId}`));
-        setDeletingId(null);
+    const handleDelete = async () => {
+        if (!deleteConfirm) return;
+        const { type, id, catId } = deleteConfirm;
+        if (type === 'cat') await remove(ref(rtdb, `gallery/${id}`));
+        else if (type === 'img') await remove(ref(rtdb, `gallery/${catId}/images/${id}`));
+        else if (type === 'reg') await remove(ref(rtdb, `registrations/${id}`));
         setDeleteConfirm(null);
     };
 
-    const deleteImage = async (catId: string, imgId: string) => {
-        setDeletingId(imgId);
-        await remove(ref(rtdb, `gallery/${catId}/images/${imgId}`));
-        setDeletingId(null);
-        setDeleteConfirm(null);
-    };
-
-    const toggleExpand = (catId: string) =>
-        setExpandedCats((prev) => {
-            const next = new Set(prev);
-            next.has(catId) ? next.delete(catId) : next.add(catId);
-            return next;
-        });
-
-    const totalImages = categories.reduce((s, c) => s + c.images.length, 0);
+    const filteredRegs = registrations.filter(r =>
+        r.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        r.phone.includes(searchQuery) ||
+        r.collegeName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
-        <div className="min-h-screen" style={{ background: '#030712' }}>
-            {/* Top bar */}
-            <header className="sticky top-0 z-40 glass border-b border-cyan-500/10 px-4 sm:px-6 py-4">
-                <div className="max-w-6xl mx-auto flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-                            style={{ background: 'linear-gradient(135deg, #00d4ff, #7c3aed)' }}>
-                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <span className="font-orbitron font-bold text-sm text-white">Gallery Admin</span>
-                            <p className="font-space text-[10px] text-slate-500 tracking-wider">SAMAGRA 2026</p>
-                        </div>
+        <div className="min-h-screen bg-[#030712] text-white">
+            <header className="sticky top-0 z-40 bg-black/50 backdrop-blur-md border-b border-white/5 p-4">
+                <div className="max-w-7xl mx-auto flex justify-between items-center">
+                    <div className="flex items-center gap-8">
+                        <span className="font-orbitron font-black text-xl gradient-text-animated">SAMAGRA ADMIN</span>
+                        <nav className="flex gap-1 bg-white/5 p-1 rounded-xl">
+                            <button onClick={() => setView('gallery')} className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${view === 'gallery' ? 'bg-cyan-500/20 text-cyan-400' : 'text-slate-500'}`}>Gallery</button>
+                            <button onClick={() => setView('registrations')} className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${view === 'registrations' ? 'bg-purple-500/20 text-purple-400' : 'text-slate-500'}`}>Registrations</button>
+                        </nav>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <Link href="/gallery" target="_blank"
-                            className="hidden sm:flex items-center gap-1.5 font-space text-xs text-slate-400 hover:text-cyan-400 transition-colors px-3 py-2 rounded-lg hover:bg-white/5">
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                            View Gallery
-                        </Link>
-                        <button
-                            onClick={onLogout}
-                            className="flex items-center gap-1.5 font-space text-xs text-slate-500 hover:text-red-400 transition-colors px-3 py-2 rounded-lg hover:bg-red-500/5"
-                        >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                            </svg>
-                            Logout
-                        </button>
-                    </div>
+                    <button onClick={onLogout} className="text-slate-500 hover:text-red-400 text-xs p-2">Logout</button>
                 </div>
             </header>
 
-            <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-                {/* Stats */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
-                    {[
-                        { label: 'Categories', value: categories.length, color: '#00d4ff' },
-                        { label: 'Total Photos', value: totalImages, color: '#7c3aed' },
-                        { label: 'Status', value: 'Live', color: '#00ff88' },
-                    ].map((stat) => (
-                        <div key={stat.label} className="p-4 rounded-xl"
-                            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                            <p className="font-orbitron font-bold text-2xl" style={{ color: stat.color }}>{stat.value}</p>
-                            <p className="font-space text-xs text-slate-500 uppercase tracking-wider mt-0.5">{stat.label}</p>
+            <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+                {loading ? (
+                    <div className="flex items-center justify-center h-64">Loading Dashboard…</div>
+                ) : view === 'gallery' ? (
+                    <section className="space-y-6">
+                        <div className="flex justify-between items-center">
+                            <h2 className="font-orbitron font-bold text-xl">Gallery Management</h2>
+                            <button onClick={() => setShowAddCat(true)} className="btn-primary-gradient px-4 py-2 rounded-xl text-xs font-bold">+ New Category</button>
                         </div>
-                    ))}
-                </div>
 
-                {/* Add Category */}
-                <div className="mb-6">
-                    {!showAddCat ? (
-                        <button
-                            onClick={() => setShowAddCat(true)}
-                            className="flex items-center gap-2 btn-primary-gradient px-5 py-3 rounded-xl font-space font-bold text-sm"
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
-                            Add New Category
-                        </button>
-                    ) : (
-                        <div className="flex gap-3 items-center p-4 rounded-2xl"
-                            style={{ background: 'rgba(0,212,255,0.04)', border: '1px solid rgba(0,212,255,0.2)' }}>
-                            <svg className="w-5 h-5 text-cyan-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                            </svg>
-                            <input
-                                type="text"
-                                value={newCatName}
-                                onChange={(e) => setNewCatName(e.target.value)}
-                                onKeyDown={(e) => e.key === 'Enter' && addCategory()}
-                                placeholder="Category name (e.g. Registration Day, Prize Distribution…)"
-                                autoFocus
-                                className="input-glow flex-1 px-4 py-2.5 rounded-xl text-sm font-space"
-                            />
-                            <button
-                                onClick={addCategory}
-                                disabled={addingCat || !newCatName.trim()}
-                                className="btn-primary-gradient px-5 py-2.5 rounded-xl font-space font-bold text-sm disabled:opacity-50 whitespace-nowrap"
-                            >
-                                {addingCat ? 'Creating…' : 'Create'}
-                            </button>
-                            <button onClick={() => { setShowAddCat(false); setNewCatName(''); }}
-                                className="w-9 h-9 rounded-lg flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/10 transition-colors">
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
+                        {showAddCat && (
+                            <div className="flex gap-2 bg-white/5 p-4 rounded-2xl border border-white/10">
+                                <input type="text" value={newCatName} onChange={(e) => setNewCatName(e.target.value)} placeholder="Category Name" className="flex-1 bg-black/50 border border-white/10 p-2 rounded-xl text-sm" />
+                                <button onClick={async () => {
+                                    if (!newCatName.trim()) return;
+                                    await set(push(ref(rtdb, 'gallery')), { name: newCatName.trim(), createdAt: new Date().toISOString() });
+                                    setNewCatName(''); setShowAddCat(false);
+                                }} className="bg-cyan-500 px-4 py-2 rounded-xl text-xs font-bold">Create</button>
+                                <button onClick={() => setShowAddCat(false)} className="text-slate-500">Cancel</button>
+                            </div>
+                        )}
+
+                        <div className="grid gap-4">
+                            {categories.map(cat => (
+                                <div key={cat.id} className="bg-white/5 border border-white/5 rounded-2xl overflow-hidden">
+                                    <div className="p-4 flex justify-between items-center">
+                                        <div className="flex items-center gap-4 cursor-pointer" onClick={() => setExpandedCats(prev => { const n = new Set(prev); if (n.has(cat.id)) n.delete(cat.id); else n.add(cat.id); return n; })}>
+                                            <span className="text-slate-500">{expandedCats.has(cat.id) ? '▼' : '▶'}</span>
+                                            <h3 className="font-bold">{cat.name}</h3>
+                                            <span className="text-xs text-slate-500">{cat.images.length} photos</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button onClick={() => setUploadModal(cat)} className="text-cyan-400 text-xs font-bold hover:underline">Add Photos</button>
+                                            <button onClick={() => setDeleteConfirm({ type: 'cat', id: cat.id })} className="text-red-500 text-xs opacity-50 hover:opacity-100">Delete</button>
+                                        </div>
+                                    </div>
+                                    {expandedCats.has(cat.id) && (
+                                        <div className="p-4 grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-2 border-t border-white/5">
+                                            {cat.images.map(img => (
+                                                <div key={img.id} className="relative group aspect-square">
+                                                    <img src={img.data} className="w-full h-full object-cover rounded-lg" />
+                                                    <button onClick={() => setDeleteConfirm({ type: 'img', id: img.id, catId: cat.id })} className="absolute top-1 right-1 bg-red-500 text-white w-5 h-5 rounded-full text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">✕</button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
                         </div>
-                    )}
-                </div>
+                    </section>
+                ) : (
+                    <section className="space-y-6">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <h2 className="font-orbitron font-bold text-xl">Event Registrations</h2>
+                            <div className="relative w-full sm:w-64">
+                                <input type="text" placeholder="Search name, phone…" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 p-2 rounded-xl text-sm pl-8" />
+                                <span className="absolute left-2.5 top-2.5 opacity-30">🔍</span>
+                            </div>
+                        </div>
 
-                {/* Loading */}
-                {loading && (
-                    <div className="flex items-center justify-center py-24">
-                        <svg className="w-8 h-8 animate-spin text-cyan-500" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                        </svg>
-                    </div>
+                        <div className="bg-white/5 border border-white/5 rounded-2xl overflow-x-auto">
+                            <table className="w-full text-left text-sm">
+                                <thead className="border-b border-white/10">
+                                    <tr>
+                                        <th className="p-4 font-bold text-slate-400 uppercase text-[10px] tracking-widest">Team / Lead</th>
+                                        <th className="p-4 font-bold text-slate-400 uppercase text-[10px] tracking-widest">Events</th>
+                                        <th className="p-4 font-bold text-slate-400 uppercase text-[10px] tracking-widest">Payment</th>
+                                        <th className="p-4 font-bold text-slate-400 uppercase text-[10px] tracking-widest">Status</th>
+                                        <th className="p-4 font-bold text-slate-400 uppercase text-[10px] tracking-widest">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/5">
+                                    {filteredRegs.map(reg => (
+                                        <tr key={reg.id} className="hover:bg-white/5 transition-colors">
+                                            <td className="p-4">
+                                                <div className="font-bold">{reg.fullName}</div>
+                                                <div className="text-[11px] text-slate-500">{reg.collegeName}</div>
+                                                <div className="text-[11px] text-cyan-500">{reg.phone}</div>
+                                            </td>
+                                            <td className="p-4">
+                                                <div className="flex flex-wrap gap-1">
+                                                    {reg.events.map(e => <span key={e} className="bg-white/10 px-2 py-0.5 rounded text-[10px]">{e}</span>)}
+                                                </div>
+                                            </td>
+                                            <td className="p-4">
+                                                <div className="text-xs uppercase text-slate-400">{reg.paymentMethod}</div>
+                                                <div className="font-bold">₹{reg.totalAmount}</div>
+                                                {reg.transactionId && <div className="text-[10px] font-mono text-purple-400">{reg.transactionId}</div>}
+                                            </td>
+                                            <td className="p-4">
+                                                <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${reg.status === 'pending_verification' ? 'bg-yellow-500/20 text-yellow-400' :
+                                                        reg.status === 'verified' ? 'bg-green-500/20 text-green-400' :
+                                                            reg.status === 'pay_at_venue' ? 'bg-blue-500/20 text-blue-400' : 'bg-slate-500/20'
+                                                    }`}>
+                                                    {reg.status.replace('_', ' ')}
+                                                </span>
+                                            </td>
+                                            <td className="p-4">
+                                                <div className="flex gap-2">
+                                                    <button onClick={() => setSelectedReg(reg)} className="text-cyan-400 font-bold hover:underline py-1">View</button>
+                                                    <button onClick={() => setDeleteConfirm({ type: 'reg', id: reg.id })} className="text-red-500 opacity-50 hover:opacity-100 py-1">Delete</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
                 )}
+            </main>
 
-                {/* Empty */}
-                {!loading && categories.length === 0 && (
-                    <div className="text-center py-20">
-                        <p className="font-space text-slate-500 text-sm">No categories yet. Create one above to get started!</p>
-                    </div>
-                )}
+            {/* Registration Details Modal */}
+            {selectedReg && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90" onClick={() => setSelectedReg(null)}>
+                    <div className="bg-[#0d1117] border border-white/10 rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 lg:p-10" onClick={e => e.stopPropagation()}>
+                        <div className="flex justify-between items-start mb-8">
+                            <h2 className="font-orbitron font-black text-2xl text-white">Registration Details</h2>
+                            <button onClick={() => setSelectedReg(null)} className="text-slate-500 hover:text-white text-2xl">✕</button>
+                        </div>
 
-                {/* Category List */}
-                <div className="space-y-4">
-                    {categories.map((cat) => {
-                        const isExpanded = expandedCats.has(cat.id);
-                        return (
-                            <div key={cat.id} className="rounded-2xl overflow-hidden"
-                                style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                                {/* Category header */}
-                                <div className="flex items-center gap-3 px-5 py-4">
-                                    <button
-                                        onClick={() => toggleExpand(cat.id)}
-                                        className="flex items-center gap-3 flex-1 min-w-0 text-left"
-                                    >
-                                        <svg
-                                            className="w-4 h-4 text-slate-500 flex-shrink-0 transition-transform duration-200"
-                                            style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)' }}
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                        </svg>
-                                        {editingCatId === cat.id ? (
-                                            <input
-                                                type="text"
-                                                value={editingCatName}
-                                                onChange={(e) => setEditingCatName(e.target.value)}
-                                                onKeyDown={(e) => { if (e.key === 'Enter') renameCategory(cat.id); if (e.key === 'Escape') setEditingCatId(null); }}
-                                                onClick={(e) => e.stopPropagation()}
-                                                autoFocus
-                                                className="input-glow flex-1 px-3 py-1.5 rounded-lg text-sm font-space"
-                                            />
-                                        ) : (
-                                            <span className="font-orbitron font-bold text-base text-white truncate">{cat.name}</span>
-                                        )}
-                                        <span className="font-space text-xs text-slate-500 flex-shrink-0">
-                                            {cat.images.length} photo{cat.images.length !== 1 ? 's' : ''}
-                                        </span>
-                                    </button>
-
-                                    {/* Category actions */}
-                                    <div className="flex items-center gap-2 flex-shrink-0">
-                                        {editingCatId === cat.id ? (
-                                            <>
-                                                <button onClick={() => renameCategory(cat.id)}
-                                                    className="px-3 py-1.5 rounded-lg font-space text-xs font-bold text-green-400 hover:bg-green-500/10 transition-colors">
-                                                    Save
-                                                </button>
-                                                <button onClick={() => setEditingCatId(null)}
-                                                    className="px-3 py-1.5 rounded-lg font-space text-xs text-slate-500 hover:bg-white/5 transition-colors">
-                                                    Cancel
-                                                </button>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <button
-                                                    onClick={() => setUploadModal(cat)}
-                                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-space text-xs font-bold text-cyan-400 transition-colors hover:bg-cyan-400/10"
-                                                >
-                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                                    </svg>
-                                                    Add Photos
-                                                </button>
-                                                <button
-                                                    onClick={() => { setEditingCatId(cat.id); setEditingCatName(cat.name); }}
-                                                    className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-colors"
-                                                    aria-label="Rename category"
-                                                >
-                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                    </svg>
-                                                </button>
-                                                <button
-                                                    onClick={() => setDeleteConfirm({ type: 'cat', catId: cat.id })}
-                                                    className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 hover:text-red-400 hover:bg-red-500/5 transition-colors"
-                                                    aria-label="Delete category"
-                                                >
-                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                </button>
-                                            </>
-                                        )}
+                        <div className="grid md:grid-cols-2 gap-8">
+                            <div className="space-y-6">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-white/5 p-4 rounded-2xl">
+                                        <label className="text-[10px] text-slate-500 uppercase font-bold block mb-1">Full Name</label>
+                                        <p className="text-sm font-semibold">{selectedReg.fullName}</p>
+                                    </div>
+                                    <div className="bg-white/5 p-4 rounded-2xl">
+                                        <label className="text-[10px] text-slate-500 uppercase font-bold block mb-1">Phone</label>
+                                        <p className="text-sm font-semibold text-cyan-400">{selectedReg.phone}</p>
+                                    </div>
+                                    <div className="bg-white/5 p-4 rounded-2xl col-span-2">
+                                        <label className="text-[10px] text-slate-500 uppercase font-bold block mb-1">College</label>
+                                        <p className="text-sm font-semibold">{selectedReg.collegeName}</p>
+                                    </div>
+                                    <div className="bg-white/5 p-4 rounded-2xl">
+                                        <label className="text-[10px] text-slate-500 uppercase font-bold block mb-1">Payment Method</label>
+                                        <p className="text-sm font-semibold uppercase">{selectedReg.paymentMethod}</p>
+                                    </div>
+                                    <div className="bg-white/5 p-4 rounded-2xl">
+                                        <label className="text-[10px] text-slate-500 uppercase font-bold block mb-1">Amount</label>
+                                        <p className="text-sm font-semibold">₹{selectedReg.totalAmount}</p>
+                                    </div>
+                                    <div className="bg-white/5 p-4 rounded-2xl col-span-2">
+                                        <label className="text-[10px] text-slate-500 uppercase font-bold block mb-1">Transaction ID</label>
+                                        <p className="text-xs font-mono text-purple-400">{selectedReg.transactionId}</p>
                                     </div>
                                 </div>
 
-                                {/* Images grid (expanded) */}
-                                {isExpanded && (
-                                    <div className="px-5 pb-5 border-t border-white/5 pt-4">
-                                        {cat.images.length === 0 ? (
-                                            <div className="flex items-center justify-center h-24 rounded-xl font-space text-sm text-slate-600"
-                                                style={{ background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(255,255,255,0.05)' }}>
-                                                No photos yet — click &quot;Add Photos&quot; above
-                                            </div>
-                                        ) : (
-                                            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
-                                                {cat.images.map((img) => (
-                                                    <div key={img.id} className="relative group rounded-xl overflow-hidden"
-                                                        style={{ aspectRatio: '1', border: '1px solid rgba(255,255,255,0.06)' }}>
-                                                        <img src={img.data} alt={img.caption || ''} className="w-full h-full object-cover" />
-                                                        {/* Delete overlay */}
-                                                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
-                                                            style={{ background: 'rgba(0,0,0,0.6)' }}>
-                                                            <button
-                                                                onClick={() => setDeleteConfirm({ type: 'img', catId: cat.id, imgId: img.id })}
-                                                                className="w-8 h-8 rounded-full bg-red-500/80 hover:bg-red-500 flex items-center justify-center transition-colors"
-                                                                aria-label="Delete image"
-                                                            >
-                                                                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                                </svg>
-                                                            </button>
-                                                        </div>
-                                                        {img.caption && (
-                                                            <div className="absolute bottom-0 left-0 right-0 px-2 py-1"
-                                                                style={{ background: 'rgba(0,0,0,0.7)' }}>
-                                                                <p className="font-space text-[9px] text-slate-300 truncate">{img.caption}</p>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
+                                <div className="flex gap-4">
+                                    <button onClick={() => updateStatus(selectedReg.id, 'verified')} className="flex-1 bg-green-500 h-10 rounded-xl text-white font-bold text-xs uppercase tracking-widest hover:bg-green-600 transition-colors">Verify Payment</button>
+                                    <button onClick={() => updateStatus(selectedReg.id, 'pending_verification')} className="flex-1 border border-yellow-500/50 text-yellow-500 h-10 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-yellow-500/10 transition-colors">Set Pending</button>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <label className="text-[10px] text-slate-500 uppercase font-bold block">Payment Screenshot</label>
+                                {selectedReg.screenshotBase64 ? (
+                                    <div className="rounded-2xl overflow-hidden border border-white/10">
+                                        <img src={selectedReg.screenshotBase64} alt="Screenshot" className="w-full h-auto" />
+                                    </div>
+                                ) : (
+                                    <div className="h-48 bg-white/5 rounded-2xl flex items-center justify-center text-slate-600 text-sm border-2 border-dashed border-white/5">
+                                        No screenshot uploaded
                                     </div>
                                 )}
                             </div>
-                        );
-                    })}
-                </div>
-            </main>
-
-            {/* Upload Modal */}
-            {uploadModal && (
-                <UploadModal category={uploadModal} onClose={() => setUploadModal(null)} />
-            )}
-
-            {/* Delete Confirm Dialog */}
-            {deleteConfirm && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.8)' }}>
-                    <div className="w-full max-w-sm p-6 rounded-2xl" style={{ background: '#0d1117', border: '1px solid rgba(239,68,68,0.3)' }}>
-                        <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
-                            <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
-                        </div>
-                        <h3 className="font-orbitron font-bold text-white text-center mb-2">
-                            {deleteConfirm.type === 'cat' ? 'Delete Category?' : 'Delete Photo?'}
-                        </h3>
-                        <p className="font-space text-sm text-slate-400 text-center mb-6">
-                            {deleteConfirm.type === 'cat'
-                                ? 'This will permanently delete the category and all its photos.'
-                                : 'This photo will be permanently removed.'}
-                        </p>
-                        <div className="flex gap-3">
-                            <button onClick={() => setDeleteConfirm(null)}
-                                className="flex-1 py-2.5 rounded-xl font-space text-sm text-slate-400"
-                                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                                Cancel
-                            </button>
-                            <button
-                                onClick={() => deleteConfirm.type === 'cat'
-                                    ? deleteCategory(deleteConfirm.catId)
-                                    : deleteImage(deleteConfirm.catId, deleteConfirm.imgId!)
-                                }
-                                disabled={!!deletingId}
-                                className="flex-1 py-2.5 rounded-xl font-space font-bold text-sm text-white bg-red-500 hover:bg-red-600 transition-colors disabled:opacity-60"
-                            >
-                                {deletingId ? 'Deleting…' : 'Delete'}
-                            </button>
                         </div>
                     </div>
                 </div>
             )}
+
+            {/* Global Delete Confirmation */}
+            {deleteConfirm && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/90">
+                    <div className="bg-[#0d1117] border border-red-500/20 p-8 rounded-3xl max-w-sm w-full text-center">
+                        <div className="text-red-500 text-3xl mb-4">⚠️</div>
+                        <h3 className="font-bold text-white mb-2 uppercase tracking-widest text-sm">Permanent Action</h3>
+                        <p className="text-slate-400 text-xs mb-8">Are you sure you want to delete this {deleteConfirm.type === 'cat' ? 'category' : deleteConfirm.type === 'img' ? 'photo' : 'registration'}? This cannot be undone.</p>
+                        <div className="flex gap-3">
+                            <button onClick={() => setDeleteConfirm(null)} className="flex-1 bg-white/5 h-10 rounded-xl text-xs font-bold text-slate-400">Cancel</button>
+                            <button onClick={handleDelete} className="flex-1 bg-red-500 h-10 rounded-xl text-xs font-bold text-white">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {uploadModal && <UploadModal category={uploadModal} onClose={() => setUploadModal(null)} />}
         </div>
     );
 }
 
-// ─── PAGE ENTRY ──────────────────────────────────────────────────────────────
 export default function AdminPage() {
     const [authed, setAuthed] = useState<boolean | null>(null);
-
-    useEffect(() => {
-        setAuthed(sessionStorage.getItem('samagra_admin') === '1');
-    }, []);
-
-    const handleLogin = () => setAuthed(true);
-    const handleLogout = () => {
-        sessionStorage.removeItem('samagra_admin');
-        setAuthed(false);
-    };
-
-    if (authed === null) {
-        return <div className="min-h-screen" style={{ background: '#030712' }} />;
-    }
-
-    return authed
-        ? <AdminDashboard onLogout={handleLogout} />
-        : <LoginScreen onLogin={handleLogin} />;
+    useEffect(() => { setAuthed(sessionStorage.getItem('samagra_admin') === '1'); }, []);
+    if (authed === null) return null;
+    return authed ? <AdminDashboard onLogout={() => { sessionStorage.removeItem('samagra_admin'); setAuthed(false); }} /> : <LoginScreen onLogin={() => setAuthed(true)} />;
 }

@@ -6,7 +6,7 @@ import { rtdb } from '@/lib/firebase';
 
 // ─── CONFIG ────────────────────────────────────────────────────────────────────
 const config = {
-  upiId: 'samagra2026@upi',          // ← Replace with real UPI ID
+  upiId: '',          // ← Replace with real UPI ID
   payeeName: 'SAMAGRA 2026',
   pricePerEvent: 200,                 // ₹200 per event
   eventNote: 'SAMAGRA2026 Registration',
@@ -40,9 +40,8 @@ type FormErrors = Partial<Record<keyof FormData | keyof PaymentData, string>>;
 // ─── CONSTANTS ─────────────────────────────────────────────────────────────────
 const branches = [
   { value: '', label: 'Select Branch' },
-  { value: 'csd', label: 'Computer Science & Design (CSD)' },
-  { value: 'csit', label: 'Computer Science & IT (CSIT)' },
-  { value: 'cse', label: 'Computer Science & Engineering' },
+  { value: 'CS', label: 'Computer Science & related Branches' },
+  { value: 'ECE', label: 'EEE' },
   { value: 'ece', label: 'Electronics & Communication' },
   { value: 'me', label: 'Mechanical Engineering' },
   { value: 'ce', label: 'Civil Engineering' },
@@ -458,7 +457,7 @@ export function RegistrationForm() {
                     Full Name <span className="text-red-400" aria-hidden="true">*</span>
                   </label>
                   <input type="text" id="fullName" name="fullName" value={formData.fullName}
-                    onChange={handleChange} placeholder="e.g. Sujay Kumar"
+                    onChange={handleChange} placeholder="e.g. Mohan Siva"
                     autoComplete="name" className={inputClass('fullName')} aria-required="true" />
                   {errors.fullName && <p className="font-space text-xs text-red-400 mt-1" role="alert">{errors.fullName}</p>}
                 </div>
@@ -1014,8 +1013,9 @@ export function RegistrationForm() {
                   { label: 'Participants', value: formData.numberOfParticipants },
                   { label: 'Team Lead', value: formData.teamLeadName },
                   { label: 'Events', value: formData.eventType.map((e) => eventOptions.find((o) => o.value === e)?.label).join(', ') },
-                  { label: 'Amount Paid', value: `₹${totalAmount}` },
-                  { label: 'Transaction ID', value: payment.transactionId },
+                  { label: 'Payment Method', value: formData.paymentMethod === 'online' ? 'Online UPI' : 'Pay at Venue' },
+                  { label: 'Total Amount', value: `₹${totalAmount}` },
+                  ...(formData.paymentMethod === 'online' ? [{ label: 'Transaction ID', value: payment.transactionId }] : []),
                 ].map(({ label, value }) => (
                   <div key={label} className="flex justify-between gap-3">
                     <span className="font-space text-xs text-slate-500 flex-shrink-0">{label}</span>
@@ -1027,14 +1027,17 @@ export function RegistrationForm() {
               <div
                 className="rounded-xl p-4"
                 style={{
-                  background: 'rgba(0,255,136,0.04)',
-                  border: '1px solid rgba(0,255,136,0.15)',
+                  background: formData.paymentMethod === 'online' ? 'rgba(0,255,136,0.04)' : 'rgba(255,170,0,0.04)',
+                  border: `1px solid ${formData.paymentMethod === 'online' ? 'rgba(0,255,136,0.15)' : 'rgba(255,170,0,0.15)'}`,
                 }}
               >
-                <p className="font-space text-sm text-green-400 mb-1 font-semibold">What&apos;s Next?</p>
+                <p className={`font-space text-sm mb-1 font-semibold ${formData.paymentMethod === 'online' ? 'text-green-400' : 'text-yellow-400'}`}>
+                  {formData.paymentMethod === 'online' ? "What's Next?" : "Action Required"}
+                </p>
                 <p className="font-space text-xs text-slate-500 leading-relaxed">
-                  Your payment will be verified by our team. You&apos;ll receive confirmation details at the event.
-                  Contact coordinators if you have any queries.
+                  {formData.paymentMethod === 'online'
+                    ? "Your payment will be verified by our team. You'll receive confirmation details at the event."
+                    : "Please visit the registration desk at the venue to complete your payment and collect your entry pass."}
                 </p>
               </div>
 
