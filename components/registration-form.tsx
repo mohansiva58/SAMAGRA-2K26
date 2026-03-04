@@ -26,6 +26,7 @@ type FormData = {
   numberOfParticipants: string;
   teamLeadName: string;
   teamLeadPhone: string;
+  paymentMethod: 'online' | 'venue' | '';
 };
 
 type PaymentData = {
@@ -92,6 +93,7 @@ function validateStep1(data: FormData): FormErrors {
   if (!data.teamLeadName.trim()) errors.teamLeadName = 'Team lead name is required';
   if (!data.teamLeadPhone.match(/^[6-9]\d{9}$/))
     errors.teamLeadPhone = 'Enter a valid 10-digit mobile number';
+  if (!data.paymentMethod) errors.paymentMethod = 'Please select a payment method';
   return errors;
 }
 
@@ -246,6 +248,7 @@ export function RegistrationForm() {
     numberOfParticipants: '',
     teamLeadName: '',
     teamLeadPhone: '',
+    paymentMethod: '',
   });
   const [payment, setPayment] = useState<PaymentData>({
     transactionId: '',
@@ -317,67 +320,46 @@ export function RegistrationForm() {
     }
   };
 
-  // ── Step 1 → 2 ──
-  const handleNext = () => {
-    const errs = validateStep1(formData);
-    if (Object.keys(errs).length > 0) {
-      setErrors(errs);
-      return;
-    }
-    setErrors({});
-    setStep(2);
-    setTimeout(() => {
-      document.getElementById('registration')?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
-  };
-
-  // ── Step 2 → 3 (Submit to Firebase) ──
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const errs = validateStep2(payment);
-    if (Object.keys(errs).length > 0) {
-      setErrors(errs);
-      return;
-    }
+  // ── Registration Submission ──
+  const submitRegistration = async (actualPayment?: PaymentData) => {
     setLoading(true);
     setSubmitError('');
 
     try {
-      // 1. Convert screenshot to base64 (stored directly in RTDB — no Storage/CORS needed)
+      // 1. Convert screenshot to base64 if it exists
       let screenshotBase64 = '';
-      if (payment.screenshotFile) {
+      if (actualPayment?.screenshotFile) {
         screenshotBase64 = await new Promise<string>((resolve, reject) => {
           const reader = new FileReader();
           reader.onload = (e) => resolve(e.target?.result as string ?? '');
           reader.onerror = reject;
-          reader.readAsDataURL(payment.screenshotFile!);
+          reader.readAsDataURL(actualPayment.screenshotFile!);
         });
       }
 
       // 2. Save everything to Firebase Realtime Database
       const registrationsRef = ref(rtdb, 'registrations');
       const newEntryRef = push(registrationsRef);
+
+      const isOnline = formData.paymentMethod === 'online';
+
       await set(newEntryRef, {
-        // Personal details
         fullName: formData.fullName.trim(),
         collegeName: formData.collegeName.trim(),
         branch: formData.branch,
         year: formData.year,
         email: formData.email.trim().toLowerCase(),
         phone: formData.phone.trim(),
-        // Team details
         teamName: formData.teamName.trim(),
         numberOfParticipants: formData.numberOfParticipants,
         teamLeadName: formData.teamLeadName.trim(),
         teamLeadPhone: formData.teamLeadPhone.trim(),
-        // Event selection
         events: formData.eventType,
-        // Payment info
+        paymentMethod: formData.paymentMethod,
         totalAmount,
-        transactionId: payment.transactionId.trim(),
-        screenshotBase64,           // stored directly — no Storage needed
-        // Metadata
-        status: 'pending_verification',
+        transactionId: isOnline ? (actualPayment?.transactionId.trim() || '') : 'PAY_AT_VENUE',
+        screenshotBase64: isOnline ? screenshotBase64 : '',
+        status: isOnline ? 'pending_verification' : 'pay_at_venue',
         submittedAt: new Date().toISOString(),
       });
 
@@ -388,6 +370,36 @@ export function RegistrationForm() {
       setSubmitError('Failed to submit. Please check your connection and try again.');
       setLoading(false);
     }
+  };
+
+  // ── Step 1 → 2 or Submit ──
+  const handleNext = async () => {
+    const errs = validateStep1(formData);
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs);
+      return;
+    }
+    setErrors({});
+
+    if (formData.paymentMethod === 'online') {
+      setStep(2);
+      setTimeout(() => {
+        document.getElementById('registration')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      await submitRegistration();
+    }
+  };
+
+  // ── Step 2 → 3 (Submit Online Payment) ──
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const errs = validateStep2(payment);
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs);
+      return;
+    }
+    await submitRegistration(payment);
   };
 
   const inputClass = (field: string) =>
@@ -663,6 +675,77 @@ export function RegistrationForm() {
                   </fieldset>
                 </div>
 
+                {/* ── Payment Method ── */}
+                <SectionDivider title="Payment Method" />
+
+                <div className="mb-6">
+                  <fieldset>
+                    <legend className="block font-space text-xs font-semibold text-slate-300 mb-3 uppercase tracking-wider">
+                      How would you like to pay? <span className="text-red-400" aria-hidden="true">*</span>
+                    </legend>
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      {/* Online Payment */}
+                      <label
+                        className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl cursor-pointer transition-all duration-200 select-none"
+                        style={{
+                          background: formData.paymentMethod === 'online'
+                            ? 'linear-gradient(135deg, rgba(0,212,255,0.12), rgba(124,58,237,0.12))'
+                            : 'rgba(13,17,23,0.6)',
+                          border: `1px solid ${formData.paymentMethod === 'online' ? 'rgba(0,212,255,0.45)' : 'rgba(255,255,255,0.06)'}`,
+                          boxShadow: formData.paymentMethod === 'online' ? '0 0 12px rgba(0,212,255,0.1)' : 'none',
+                        }}
+                      >
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          value="online"
+                          checked={formData.paymentMethod === 'online'}
+                          onChange={handleChange}
+                          className="sr-only"
+                        />
+                        <div className="w-10 h-10 rounded-full flex items-center justify-center bg-cyan-500/10 text-cyan-400 mb-1">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                          </svg>
+                        </div>
+                        <span className="font-space text-sm font-bold text-slate-200 text-center">Online Payment</span>
+                        <span className="font-space text-[10px] text-slate-500 text-center leading-tight">Pay via UPI / QR Right Now</span>
+                      </label>
+
+                      {/* Pay at Venue */}
+                      <label
+                        className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl cursor-pointer transition-all duration-200 select-none"
+                        style={{
+                          background: formData.paymentMethod === 'venue'
+                            ? 'linear-gradient(135deg, rgba(124,58,237,0.12), rgba(0,212,255,0.12))'
+                            : 'rgba(13,17,23,0.6)',
+                          border: `1px solid ${formData.paymentMethod === 'venue' ? 'rgba(124,58,237,0.45)' : 'rgba(255,255,255,0.06)'}`,
+                          boxShadow: formData.paymentMethod === 'venue' ? '0 0 12px rgba(124,58,237,0.1)' : 'none',
+                        }}
+                      >
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          value="venue"
+                          checked={formData.paymentMethod === 'venue'}
+                          onChange={handleChange}
+                          className="sr-only"
+                        />
+                        <div className="w-10 h-10 rounded-full flex items-center justify-center bg-purple-500/10 text-purple-400 mb-1">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                          </svg>
+                        </div>
+                        <span className="font-space text-sm font-bold text-slate-200 text-center">Pay at Venue</span>
+                        <span className="font-space text-[10px] text-slate-500 text-center leading-tight">Pay at registration desk</span>
+                      </label>
+                    </div>
+                    {errors.paymentMethod && (
+                      <p className="font-space text-xs text-red-400 mt-2" role="alert">{errors.paymentMethod}</p>
+                    )}
+                  </fieldset>
+                </div>
+
                 {/* Price summary (only when events selected) */}
                 {formData.eventType.length > 0 && (
                   <PriceBadge count={formData.eventType.length} amount={totalAmount} />
@@ -672,14 +755,35 @@ export function RegistrationForm() {
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="w-full btn-primary-gradient btn-shimmer py-4 rounded-xl font-space font-bold text-base flex items-center justify-center gap-2 mt-1"
-                  aria-label="Proceed to payment"
+                  disabled={loading}
+                  className="w-full btn-primary-gradient btn-shimmer py-4 rounded-xl font-space font-bold text-base flex items-center justify-center gap-2 mt-1 disabled:opacity-60"
+                  aria-label={formData.paymentMethod === 'venue' ? 'Submit Registration' : 'Proceed to payment'}
                 >
-                  Proceed to Payment
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
+                  {loading ? (
+                    <>
+                      <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                      Submitting...
+                    </>
+                  ) : formData.paymentMethod === 'venue' ? (
+                    <>
+                      Complete Registration
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </>
+                  ) : (
+                    <>
+                      Proceed to Payment
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </>
+                  )}
                 </button>
+
               </div>
             </div>
           )}
@@ -976,3 +1080,4 @@ export function RegistrationForm() {
     </section>
   );
 }
+

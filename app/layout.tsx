@@ -20,6 +20,10 @@ export const metadata: Metadata = {
     description: 'National Level Event at SRKR Engineering College. Join us for Technical Presentation & Project Expo!',
     type: 'website',
   },
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-icon.png',
+  },
 };
 
 export default function RootLayout({
