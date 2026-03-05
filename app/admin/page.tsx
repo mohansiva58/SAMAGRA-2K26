@@ -249,7 +249,12 @@ function UploadModal({ category, onClose }: { category: GalleryCategory; onClose
         setProgress(0);
         for (let i = 0; i < files.length; i++) {
             const { file, caption } = files[i];
-            const data = file.type.startsWith('video/') ? await fileToDataURL(file) : await compressImage(file);
+            const IMAGE_COMPRESS_THRESHOLD = 10 * 1024 * 1024; // 10 MB
+            const data = file.type.startsWith('video/')
+                ? await fileToDataURL(file)
+                : file.size > IMAGE_COMPRESS_THRESHOLD
+                    ? await compressImage(file)          // > 10MB → compress
+                    : await fileToDataURL(file);         // ≤ 10MB → upload as-is
             const imagesRef = ref(rtdb, `gallery/${category.id}/images`);
             const newRef = push(imagesRef);
             await set(newRef, { data, caption: caption.trim(), uploadedAt: new Date().toISOString() });
