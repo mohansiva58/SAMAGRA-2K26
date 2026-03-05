@@ -314,9 +314,12 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     };
 
     const filteredRegs = registrations.filter(r =>
-        r.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        r.phone.includes(searchQuery) ||
-        r.collegeName.toLowerCase().includes(searchQuery.toLowerCase())
+        (r.fullName && r.fullName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (r.teamName && r.teamName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (r.teamLeadName && r.teamLeadName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (r.phone && r.phone.includes(searchQuery)) ||
+        (r.teamLeadPhone && r.teamLeadPhone.includes(searchQuery)) ||
+        (r.collegeName && r.collegeName.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
     return (
@@ -409,9 +412,11 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                                     {filteredRegs.map(reg => (
                                         <tr key={reg.id} className="hover:bg-white/5 transition-colors">
                                             <td className="p-4">
-                                                <div className="font-bold">{reg.fullName}</div>
+                                                <div className="font-bold">
+                                                    {reg.teamName ? `${reg.teamName} (${reg.teamLeadName || reg.fullName})` : reg.fullName}
+                                                </div>
                                                 <div className="text-[11px] text-slate-500">{reg.collegeName}</div>
-                                                <div className="text-[11px] text-cyan-500">{reg.phone}</div>
+                                                <div className="text-[11px] text-cyan-500">{reg.teamLeadPhone || reg.phone}</div>
                                             </td>
                                             <td className="p-4">
                                                 <div className="flex flex-wrap gap-1">
@@ -425,8 +430,8 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                                             </td>
                                             <td className="p-4">
                                                 <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${reg.status === 'pending_verification' ? 'bg-yellow-500/20 text-yellow-400' :
-                                                        reg.status === 'verified' ? 'bg-green-500/20 text-green-400' :
-                                                            reg.status === 'pay_at_venue' ? 'bg-blue-500/20 text-blue-400' : 'bg-slate-500/20'
+                                                    reg.status === 'verified' ? 'bg-green-500/20 text-green-400' :
+                                                        reg.status === 'pay_at_venue' ? 'bg-blue-500/20 text-blue-400' : 'bg-slate-500/20'
                                                     }`}>
                                                     {reg.status.replace('_', ' ')}
                                                 </span>
@@ -459,13 +464,25 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                             <div className="space-y-6">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="bg-white/5 p-4 rounded-2xl">
-                                        <label className="text-[10px] text-slate-500 uppercase font-bold block mb-1">Full Name</label>
-                                        <p className="text-sm font-semibold">{selectedReg.fullName}</p>
+                                        <label className="text-[10px] text-slate-500 uppercase font-bold block mb-1">{selectedReg.teamName ? 'Lead Name' : 'Full Name'}</label>
+                                        <p className="text-sm font-semibold">{selectedReg.teamLeadName || selectedReg.fullName}</p>
                                     </div>
                                     <div className="bg-white/5 p-4 rounded-2xl">
                                         <label className="text-[10px] text-slate-500 uppercase font-bold block mb-1">Phone</label>
-                                        <p className="text-sm font-semibold text-cyan-400">{selectedReg.phone}</p>
+                                        <p className="text-sm font-semibold text-cyan-400">{selectedReg.teamLeadPhone || selectedReg.phone}</p>
                                     </div>
+                                    {selectedReg.teamName && (
+                                        <div className="bg-white/5 p-4 rounded-2xl">
+                                            <label className="text-[10px] text-slate-500 uppercase font-bold block mb-1">Team Name</label>
+                                            <p className="text-sm font-semibold">{selectedReg.teamName}</p>
+                                        </div>
+                                    )}
+                                    {selectedReg.numberOfParticipants && (
+                                        <div className="bg-white/5 p-4 rounded-2xl">
+                                            <label className="text-[10px] text-slate-500 uppercase font-bold block mb-1">Team Size</label>
+                                            <p className="text-sm font-semibold">{selectedReg.numberOfParticipants} members</p>
+                                        </div>
+                                    )}
                                     <div className="bg-white/5 p-4 rounded-2xl col-span-2">
                                         <label className="text-[10px] text-slate-500 uppercase font-bold block mb-1">College</label>
                                         <p className="text-sm font-semibold">{selectedReg.collegeName}</p>
