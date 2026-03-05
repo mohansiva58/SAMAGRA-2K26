@@ -46,23 +46,57 @@ type Registration = {
 };
 
 // ─── IMAGE COMPRESSOR ────────────────────────────────────────────────────────
-async function compressImage(file: File, maxPx = 1200, quality = 0.72): Promise<string> {
+// Iteratively compresses using Canvas API (no third-party libs)
+// Guarantees output base64 stays under 9.5 MB for Firebase compatibility
+const MAX_DATA_BYTES = 9.5 * 1024 * 1024; // 9.5 MB base64 limit
+
+async function compressImage(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (e) => {
             const img = new Image();
             img.onload = () => {
-                const ratio = Math.min(maxPx / img.width, maxPx / img.height, 1);
-                const canvas = document.createElement('canvas');
-                canvas.width = Math.round(img.width * ratio);
-                canvas.height = Math.round(img.height * ratio);
-                const ctx = canvas.getContext('2d')!;
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                resolve(canvas.toDataURL('image/jpeg', quality));
+                // Start at up to 1600px wide, quality 0.85
+                let maxPx = 1600;
+                let quality = 0.85;
+
+                const tryCompress = (): string => {
+                    const ratio = Math.min(maxPx / img.width, maxPx / img.height, 1);
+                    const canvas = document.createElement('canvas');
+                    canvas.width = Math.round(img.width * ratio);
+                    canvas.height = Math.round(img.height * ratio);
+                    const ctx = canvas.getContext('2d')!;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    return canvas.toDataURL('image/jpeg', quality);
+                };
+
+                let result = tryCompress();
+
+                // Iteratively reduce until within Firebase limit
+                while (result.length > MAX_DATA_BYTES && (quality > 0.2 || maxPx > 400)) {
+                    if (quality > 0.2) {
+                        quality = Math.max(0.2, quality - 0.1);
+                    } else {
+                        maxPx = Math.max(400, Math.round(maxPx * 0.75));
+                        quality = 0.6; // reset quality on each dimension reduction
+                    }
+                    result = tryCompress();
+                }
+
+                resolve(result);
             };
             img.onerror = reject;
             img.src = e.target?.result as string;
         };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+function fileToDataURL(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target?.result as string);
         reader.onerror = reject;
         reader.readAsDataURL(file);
     });
@@ -193,9 +227,14 @@ function UploadModal({ category, onClose }: { category: GalleryCategory; onClose
 
     const handleFiles = async (selected: FileList | null) => {
         if (!selected) return;
-        const arr = Array.from(selected).filter((f) => f.type.startsWith('image/'));
+        // Accept images (auto-compressed) and videos up to 50MB
+        const arr = Array.from(selected).filter((f) => f.type.startsWith('image/') || f.type.startsWith('video/'));
+        const validArr = arr.filter(f => !f.type.startsWith('video/') || f.size <= 50 * 1024 * 1024);
+        if (validArr.length < arr.length) {
+            alert('Some videos were skipped because they exceed the 50MB limit.');
+        }
         const mapped = await Promise.all(
-            arr.map(async (file) => ({
+            validArr.map(async (file) => ({
                 file,
                 preview: URL.createObjectURL(file),
                 caption: '',
@@ -210,10 +249,10 @@ function UploadModal({ category, onClose }: { category: GalleryCategory; onClose
         setProgress(0);
         for (let i = 0; i < files.length; i++) {
             const { file, caption } = files[i];
-            const compressed = await compressImage(file);
+            const data = file.type.startsWith('video/') ? await fileToDataURL(file) : await compressImage(file);
             const imagesRef = ref(rtdb, `gallery/${category.id}/images`);
             const newRef = push(imagesRef);
-            await set(newRef, { data: compressed, caption: caption.trim(), uploadedAt: new Date().toISOString() });
+            await set(newRef, { data, caption: caption.trim(), uploadedAt: new Date().toISOString() });
             setProgress(Math.round(((i + 1) / files.length) * 100));
         }
         setUploading(false);
@@ -235,20 +274,24 @@ function UploadModal({ category, onClose }: { category: GalleryCategory; onClose
                 ) : (
                     <>
                         <button onClick={() => fileRef.current?.click()} className="w-full p-8 border-2 border-dashed border-slate-700 rounded-xl mb-4 text-slate-400">
-                            Click to select photos
+                            Click to select photos or videos (Max 10MB per video)
                         </button>
-                        <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
+                        <input ref={fileRef} type="file" accept="image/*,video/*" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
                         <div className="space-y-3 mb-5 max-h-64 overflow-y-auto">
                             {files.map((f, i) => (
                                 <div key={i} className="flex gap-3 p-2 bg-white/5 rounded-lg">
-                                    <img src={f.preview} className="w-12 h-12 object-cover rounded" />
+                                    {f.file.type.startsWith('video/') ? (
+                                        <video src={f.preview} className="w-12 h-12 object-cover rounded bg-black" />
+                                    ) : (
+                                        <img src={f.preview} className="w-12 h-12 object-cover rounded" />
+                                    )}
                                     <input type="text" placeholder="Caption" value={f.caption} onChange={(e) => setFiles(prev => prev.map((item, idx) => idx === i ? { ...item, caption: e.target.value } : item))} className="flex-1 bg-black/50 p-2 text-xs rounded" />
                                 </div>
                             ))}
                         </div>
                         {uploading && <div className="text-cyan-400 text-xs text-center mb-2">Uploading: {progress}%</div>}
                         <button onClick={handleUpload} disabled={uploading || files.length === 0} className="w-full btn-primary-gradient py-3 rounded-xl disabled:opacity-50">
-                            Upload {files.length} Photos
+                            Upload {files.length} Files
                         </button>
                     </>
                 )}
@@ -376,8 +419,12 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                                     {expandedCats.has(cat.id) && (
                                         <div className="p-4 grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-2 border-t border-white/5">
                                             {cat.images.map(img => (
-                                                <div key={img.id} className="relative group aspect-square">
-                                                    <img src={img.data} className="w-full h-full object-cover rounded-lg" />
+                                                <div key={img.id} className="relative group aspect-square bg-black/20 rounded-lg overflow-hidden flex items-center justify-center">
+                                                    {img.data.startsWith('data:video/') ? (
+                                                        <video src={img.data} className="w-full h-full object-cover" muted loop autoPlay playsInline />
+                                                    ) : (
+                                                        <img src={img.data} className="w-full h-full object-cover" />
+                                                    )}
                                                     <button onClick={() => setDeleteConfirm({ type: 'img', id: img.id, catId: cat.id })} className="absolute top-1 right-1 bg-red-500 text-white w-5 h-5 rounded-full text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">✕</button>
                                                 </div>
                                             ))}
